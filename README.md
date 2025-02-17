@@ -16,7 +16,7 @@ I thrive on solving **real-world challenges in robotics, AI, and automation**, b
 - **Big Data & Cloud**: Parallelized ML Training, Google Cloud, AWS  
 
 ## Projects  
-%### Robotic Arm Motion Planning with RL  
+ <!-- ### Robotic Arm Motion Planning with RL This section is for future updates -->
 - Trained a **UR5e robotic arm** in Mujoco using **Stable-Baselines3** for reinforcement learning.  
 - Designed **state and action spaces** and implemented **reward shaping** for optimized training.  
 - Benchmarked performance using **SAC, A2C, TD3, and PPO** algorithms.  
