@@ -1,12 +1,9 @@
 ## Education
-
-|Aasf | Vada | Vdfasfd |
-|:-----:|------|--------:|
-| Bdfsd | V    |   Vfsds |
-| Bsdfs | V    |   Vsdfs |
-
-- M.Tech. Data Science	| Indian Institute of Technology Madras (_June 2024_)
-- B.Tech. Mechanical Engineering | Indian Institute of Technology Madras (_June 2023_)
+| Degree | University | Year |
+|:---:|---|---:|
+| MS Robotics | Johns Hopkins University | May 2026 |
+| MTech Data Science | Indian Institute of Technology Madras | June 2024 |
+| BTech Mechanical Engineering | Indian Institute of Technology Madras | June 2023 |
 
 ## About Me  
 I am a passionate **roboticist and machine learning researcher** with expertise in **computer vision, reinforcement learning, and large-scale data processing**. My work spans across **self-supervised learning, NeRF-based 3D modeling, motion planning, and cloud-based ML training**.  
