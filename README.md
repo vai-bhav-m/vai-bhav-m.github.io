@@ -1,5 +1,6 @@
 ## Education
-|  Aasf | Vada | Vdfasfd |
+
+|Aasf | Vada | Vdfasfd |
 |:-----:|------|--------:|
 | Bdfsd | V    |   Vfsds |
 | Bsdfs | V    |   Vsdfs |
