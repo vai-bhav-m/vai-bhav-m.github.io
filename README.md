@@ -45,5 +45,6 @@ I thrive on solving **real-world challenges in robotics, AI, and automation**, b
 [Email](mailto:vmahapa1@jh.edu)  
 
 ---
+[View My Projects](#projects)
 
 Built with using [GitHub Pages](https://pages.github.com/) & [Jekyll Minimal Theme](https://github.com/pages-themes/minimal)  
