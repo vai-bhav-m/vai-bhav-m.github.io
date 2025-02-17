@@ -1,10 +1,8 @@
 ## Education
-|M.S. Robotics | Johns Hopkins University | _May 2026_|
-|:------------:|:--------:|-------------:|
-|M.S. Robotics | Johns Hopkins University | _May 2026_|
-|:------------:|:--------:|-------------:|
-|M.S. Robotics | Johns Hopkins University | _May 2026_|
-|:------------:|:--------:|-------------:|
+|  Aasf | Vada | Vdfasfd |
+|:-----:|------|--------:|
+| Bdfsd | V    |   Vfsds |
+| Bsdfs | V    |   Vsdfs |
 
 - M.Tech. Data Science	| Indian Institute of Technology Madras (_June 2024_)
 - B.Tech. Mechanical Engineering | Indian Institute of Technology Madras (_June 2023_)
