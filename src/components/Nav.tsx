@@ -15,7 +15,7 @@ export const SECTIONS = [
 // Module-level so the reference is stable across renders — useScrollSpy depends on it.
 const SECTION_IDS = SECTIONS.map((s) => s.id)
 
-export default function Nav() {
+export default function Nav({ onSearchClick }: { onSearchClick: () => void }) {
   const [menuOpen, setMenuOpen] = useState(false)
   const active = useScrollSpy(SECTION_IDS)
 
@@ -56,7 +56,7 @@ export default function Nav() {
         </ul>
 
         <div className="ml-auto flex items-center gap-2">
-          <SearchTrigger />
+          <SearchTrigger onClick={onSearchClick} />
           <ThemeToggle />
           <button
             type="button"
@@ -138,21 +138,23 @@ function RobotIcon() {
 }
 
 /**
- * Looks like an input, behaves like a button. Clicking it will open the search
- * overlay in Phase 2 — a live input in the nav has nowhere good to put results,
+ * Looks like an input, behaves like a button — it opens the overlay rather than
+ * accepting typing. A live input in the nav has nowhere good to put results,
  * especially on mobile. See docs/03-features-and-ui.md#search-box-placement
  */
-function SearchTrigger() {
+function SearchTrigger({ onClick }: { onClick: () => void }) {
   return (
     <>
       {/* Desktop: a fake input with a keyboard hint */}
       <button
         type="button"
-        disabled
-        title="Search — coming in Phase 2"
+        onClick={onClick}
         className="hidden h-9 w-48 items-center gap-2 rounded-lg border border-neutral-200
-                   px-3 text-left text-sm text-neutral-400 sm:flex
-                   dark:border-neutral-800 dark:text-neutral-500"
+                   px-3 text-left text-sm text-neutral-400 transition
+                   hover:border-neutral-400 focus-visible:outline-2
+                   focus-visible:outline-offset-2 focus-visible:outline-sky-500 sm:flex
+                   dark:border-neutral-800 dark:text-neutral-500
+                   dark:hover:border-neutral-600"
       >
         <SearchIcon />
         <span>Search…</span>
@@ -168,11 +170,11 @@ function SearchTrigger() {
       {/* Mobile: icon only */}
       <button
         type="button"
-        disabled
+        onClick={onClick}
         aria-label="Search"
         className="grid size-9 place-items-center rounded-lg border border-neutral-200
-                   text-neutral-400 sm:hidden dark:border-neutral-800
-                   dark:text-neutral-500"
+                   text-neutral-500 transition hover:border-neutral-400 sm:hidden
+                   dark:border-neutral-800 dark:text-neutral-400"
       >
         <SearchIcon />
       </button>
