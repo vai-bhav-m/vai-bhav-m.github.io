@@ -1,4 +1,4 @@
-# dependencies
+﻿# dependencies
 node_modules/
 
 # build output
@@ -26,4 +26,4 @@ linkedin-profile.pdf
 
 # Resume carries a phone number. Untracked until a stripped version replaces it;
 # see the commented-out `resume:` line in content/about.md to re-enable the button.
-public/Vaibhav-Mahapatra-Resume.pdf
+Vaibhav-Mahapatra-Resume.pdf
