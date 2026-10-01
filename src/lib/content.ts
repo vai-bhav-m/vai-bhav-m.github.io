@@ -74,6 +74,15 @@ export type SearchItem = {
   title: string
   summary: string
   tags: string[]
+  /**
+   * Full body text, keyword-indexed but never displayed.
+   *
+   * Without it, rare literal terms that only appear in a body — "Dockerized",
+   * "AWS EC2", "CozyPose", "RRT-connect" — are findable by neither layer:
+   * embeddings dilute them across the whole bullet, and keyword search never
+   * saw them.
+   */
+  text: string
   url: string
 }
 
@@ -252,6 +261,7 @@ export function getSearchItems(): SearchItem[] {
       title: about.name,
       summary: about.tagline,
       tags: [],
+      text: about.body,
       url: '#about',
     },
     ...getProjects().map((p) => ({
@@ -260,6 +270,7 @@ export function getSearchItems(): SearchItem[] {
       title: p.title,
       summary: p.summary,
       tags: p.tags,
+      text: p.body,
       url: `#${p.slug}`,
     })),
     ...getExperience().map((e) => ({
@@ -268,6 +279,7 @@ export function getSearchItems(): SearchItem[] {
       title: `${e.role} — ${e.org}`,
       summary: e.summary,
       tags: e.tags,
+      text: e.body,
       url: `#${e.slug}`,
     })),
   ]

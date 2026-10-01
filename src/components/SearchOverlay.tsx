@@ -1,12 +1,15 @@
 import { useEffect, useRef, useState } from 'react'
-import { getCorpusSummary, search } from '../lib/search'
+import { getCorpusSummary, mergeResults, searchKeyword, searchSemantic } from '../lib/search'
 import type { Result } from '../lib/search'
+import { warmUpEmbedder } from '../lib/embedder'
 
 const KIND_LABEL: Record<Result['item']['kind'], string> = {
   about: 'About',
   project: 'Project',
   experience: 'Experience',
 }
+
+type SemanticState = 'idle' | 'loading' | 'ready' | 'error'
 
 export default function SearchOverlay({
   open,
@@ -18,15 +21,17 @@ export default function SearchOverlay({
   const [query, setQuery] = useState('')
   const [results, setResults] = useState<Result[]>([])
   const [selected, setSelected] = useState(0)
+  const [semantic, setSemantic] = useState<SemanticState>('idle')
 
   const inputRef = useRef<HTMLInputElement>(null)
   const listRef = useRef<HTMLUListElement>(null)
 
-  // Focus the input when opening, and lock background scroll so the page behind
-  // doesn't slide around under the overlay.
+  // Opening the overlay is the first moment we know the visitor intends to
+  // search, so that's when the model download starts — not on page load.
   useEffect(() => {
     if (!open) return
 
+    warmUpEmbedder()
     inputRef.current?.focus()
 
     const previousOverflow = document.body.style.overflow
@@ -36,33 +41,55 @@ export default function SearchOverlay({
     }
   }, [open])
 
-  // Reset on close so reopening starts fresh rather than showing stale results.
   useEffect(() => {
     if (!open) {
       setQuery('')
       setResults([])
       setSelected(0)
+      setSemantic('idle')
     }
   }, [open])
 
-  // search() is async, so a slow call could resolve after a newer one and
-  // overwrite it with stale results. The cancelled flag drops late answers.
-  // Nothing is async yet — this is here for the Phase 4 embedding layer.
   useEffect(() => {
+    const q = query.trim()
+    if (!q) {
+      setResults([])
+      setSemantic('idle')
+      return
+    }
+
+    // Keyword results are synchronous — they render on this keystroke.
+    const keyword = searchKeyword(q)
+    setResults(keyword)
+    setSelected(0)
+    setSemantic('loading')
+
+    // A slow embedding call can resolve after a newer one. Without this flag
+    // you'd type "robot" and see results for "rob".
     let cancelled = false
 
-    search(query).then((r) => {
-      if (cancelled) return
-      setResults(r)
-      setSelected(0)
-    })
+    searchSemantic(q)
+      .then((sem) => {
+        if (cancelled) return
+        setResults(mergeResults(keyword, sem))
+        setSemantic('ready')
+      })
+      .catch(() => {
+        // Keyword results are already on screen and useful, so a model that
+        // fails to load degrades rather than breaks.
+        if (!cancelled) setSemantic('error')
+      })
 
     return () => {
       cancelled = true
     }
   }, [query])
 
-  // Keep the highlighted row in view when arrowing past the fold.
+  // Merging can shrink the list under the cursor.
+  useEffect(() => {
+    setSelected((i) => Math.min(i, Math.max(results.length - 1, 0)))
+  }, [results])
+
   useEffect(() => {
     listRef.current
       ?.querySelector(`[data-index="${selected}"]`)
@@ -103,7 +130,7 @@ export default function SearchOverlay({
         if (results[selected]) go(results[selected])
         break
       case 'Tab':
-        // Nothing else in here is focusable, so trapping focus is just: don't leave.
+        // Nothing else in here is focusable, so trapping focus is: don't leave.
         event.preventDefault()
         break
     }
@@ -205,12 +232,19 @@ export default function SearchOverlay({
         )}
 
         <div
-          className="flex gap-4 border-t border-neutral-200 px-4 py-2 text-[11px]
-                     text-neutral-400 dark:border-neutral-800"
+          className="flex items-center gap-4 border-t border-neutral-200 px-4 py-2
+                     text-[11px] text-neutral-400 dark:border-neutral-800"
         >
           <span>↑↓ navigate</span>
           <span>↵ open</span>
           <span>esc close</span>
+
+          {/* Never a blocking spinner — keyword results are already on screen. */}
+          <span className="ml-auto" aria-live="polite">
+            {semantic === 'loading' && query.trim() !== '' && 'loading meaning search…'}
+            {semantic === 'ready' && 'meaning search on'}
+            {semantic === 'error' && 'keyword only'}
+          </span>
         </div>
       </div>
     </div>
