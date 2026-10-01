@@ -8,17 +8,9 @@ order: 1
 featured: true
 ---
 
-## Context
+Masters thesis under **Prof. A. N. Rajagopalan**, Department of Electrical
+Engineering, IIT Madras.
 
-Masters thesis under **Prof. A. N. Rajagopalan**, Department of Electrical Engineering,
-IIT Madras.
-
-## What it does
-
-Employs a **NAFNet** CNN architecture to deblur motion-blurred footage of static scenes
-from a GoPro dataset. The self-supervised formulation extracts depth and imposes
-photometric losses rather than relying on paired sharp/blurred ground truth, securing a
-**PSNR of 31.2**.
-
-Also presented a one-hour seminar on diffusion models to a lab of 40 scholars, based on
-a literature survey of 25+ papers.
+- Employed a **NAFNet** CNN architecture to de-blur motion-blurred footage of static scenes from a GoPro dataset.
+- Assembled a **self-supervised** architecture, extracting depth and imposing photometric losses to secure a **PSNR of 31.2**.
+- Presented a one-hour seminar on **diffusion models** to a lab of 40 scholars, based on a literature survey of 25+ papers.

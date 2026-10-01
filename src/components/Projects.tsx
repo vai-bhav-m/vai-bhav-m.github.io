@@ -52,7 +52,9 @@ export default function Projects() {
           : `Showing ${visible.length} of ${projects.length} projects`}
       </p>
 
-      <div className="mt-6 space-y-5">
+      {/* One column on phones, two from md up. Cards stretch to match their row
+          so the grid doesn't look ragged. */}
+      <div className="mt-6 grid gap-5 md:grid-cols-2">
         {visible.map((project) => (
           <ProjectCard key={project.slug} project={project} />
         ))}

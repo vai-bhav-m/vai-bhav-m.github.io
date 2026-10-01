@@ -42,7 +42,9 @@ export default function Experience() {
         Experience
       </h2>
 
-      <ol className="mt-8 space-y-10">
+      {/* Capped below the page width: the grid of project cards wants 5xl, but
+          running prose past ~75 characters a line gets tiring to read. */}
+      <ol className="mt-8 max-w-3xl space-y-10">
         {visible.map((entry) => (
           <Entry key={entry.slug} entry={entry} />
         ))}

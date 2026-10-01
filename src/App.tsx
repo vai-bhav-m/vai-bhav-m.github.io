@@ -40,7 +40,7 @@ export default function App() {
     <div className="min-h-dvh bg-white text-neutral-800 dark:bg-neutral-950 dark:text-neutral-300">
       <Nav onSearchClick={openSearch} />
 
-      <main className="mx-auto max-w-3xl px-5">
+      <main className="mx-auto max-w-5xl px-5">
         <About />
         <Experience />
         <Projects />
@@ -48,7 +48,7 @@ export default function App() {
       </main>
 
       <footer
-        className="mx-auto max-w-3xl border-t border-neutral-200 px-5 py-8 text-sm
+        className="mx-auto max-w-5xl border-t border-neutral-200 px-5 py-8 text-sm
                    text-neutral-500 dark:border-neutral-800"
       >
         © {new Date().getFullYear()} {about.name}

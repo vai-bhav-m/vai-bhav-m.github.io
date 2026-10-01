@@ -184,8 +184,7 @@ export default function SearchOverlay({
 
         {query.trim() === '' ? (
           <p className="px-4 py-8 text-center text-sm text-neutral-500">
-            Search across {corpus.projects} projects and {corpus.experience} roles —
-            including archived ones.
+            Search {corpus.projects} projects and {corpus.experience} roles.
           </p>
         ) : results.length === 0 ? (
           <p className="px-4 py-8 text-center text-sm text-neutral-500">

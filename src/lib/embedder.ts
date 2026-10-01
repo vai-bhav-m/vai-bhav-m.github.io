@@ -27,12 +27,25 @@ let pipe: Promise<Embedder> | null = null
  */
 export function getEmbedder(): Promise<Embedder> {
   if (!pipe) {
-    pipe = import('@huggingface/transformers').then(({ pipeline }) =>
-      // dtype 'q8' is the quantized build: ~25 MB instead of ~90 MB, with
+    pipe = import('@huggingface/transformers').then(({ env, pipeline }) => {
+      // Serve the weights from this site instead of the Hugging Face CDN.
+      // The files live in public/models/Xenova/all-MiniLM-L6-v2/ (~22.6 MB).
+      //
+      // allowRemoteModels = false is the load-bearing line: without it, a
+      // missing local file silently falls back to the CDN and you'd never know
+      // self-hosting had broken.
+      env.allowLocalModels = true
+      env.allowRemoteModels = false
+
+      // BASE_URL rather than a hard '/' so this survives a move to a project
+      // site, where everything is served from /repo-name/.
+      env.localModelPath = `${import.meta.env.BASE_URL}models/`
+
+      // dtype 'q8' is the quantized build: ~22 MB instead of ~86 MB, with
       // negligible ranking difference at this corpus size.
       // (Older @xenova/transformers used { quantized: true } — different package.)
-      pipeline('feature-extraction', MODEL, { dtype: 'q8' }),
-    ) as Promise<Embedder>
+      return pipeline('feature-extraction', MODEL, { dtype: 'q8' })
+    }) as Promise<Embedder>
   }
   return pipe
 }

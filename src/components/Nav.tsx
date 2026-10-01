@@ -24,7 +24,7 @@ export default function Nav({ onSearchClick }: { onSearchClick: () => void }) {
       className="sticky top-0 z-40 border-b border-neutral-200/70 bg-white/80
                  backdrop-blur-md dark:border-neutral-800/70 dark:bg-neutral-950/80"
     >
-      <nav className="mx-auto flex h-16 max-w-3xl items-center gap-2 px-5">
+      <nav className="mx-auto flex h-16 max-w-5xl items-center gap-2 px-5">
         <a
           href="#about"
           aria-label="Back to top"
