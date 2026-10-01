@@ -15,7 +15,7 @@ export default function About() {
       </p>
 
       {about.location && (
-        <p className="mt-2 text-sm text-neutral-500">{about.location}</p>
+        <p className="mt-2 text-sm text-neutral-500 dark:text-neutral-400">{about.location}</p>
       )}
 
       <div className="mt-6 max-w-2xl">

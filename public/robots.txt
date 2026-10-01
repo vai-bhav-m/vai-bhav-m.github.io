@@ -1,0 +1,18 @@
+# This is a job-seeking portfolio. Being found is the entire point, so every
+# crawler is welcome - search engines and AI assistants alike.
+#
+# This is a deliberate decision, not an oversight. When a recruiter asks an AI
+# assistant "who is Vaibhav Mahapatra and what has he worked on?", this site
+# should be the authoritative answer. Blocking AI crawlers does not make that
+# question go away; it just means the answer comes from less accurate sources.
+#
+# LinkedIn blocks crawlers to protect a data moat - they sell recruiters access
+# to profiles, so every reader who bypasses LinkedIn is lost revenue. Those
+# incentives are the opposite of a candidate's. Do not copy that posture here.
+#
+# See docs/01-decisions.md
+
+User-agent: *
+Allow: /
+
+Sitemap: https://vai-bhav-m.github.io/sitemap.xml

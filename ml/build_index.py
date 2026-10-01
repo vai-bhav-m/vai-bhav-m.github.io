@@ -102,22 +102,10 @@ def build_chunks(item: dict, body: str) -> list[str]:
 
 def collect() -> list[tuple[dict, str]]:
     """Returns (item metadata, body) pairs in the same shape as SearchItem."""
+    # About is deliberately not indexed - general-purpose bio prose scored
+    # mid-table on almost every unrelated query. Must stay in sync with the
+    # same exclusion in src/lib/content.ts.
     out: list[tuple[dict, str]] = []
-
-    about_data, about_body = parse(CONTENT / "about.md")
-    out.append(
-        (
-            {
-                "id": "about",
-                "kind": "about",
-                "title": about_data["name"],
-                "summary": about_data["tagline"],
-                "tags": [],
-                "url": "#about",
-            },
-            about_body,
-        )
-    )
 
     for path in sorted((CONTENT / "projects").glob("*.md")):
         data, body = parse(path)

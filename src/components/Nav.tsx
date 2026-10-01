@@ -63,6 +63,7 @@ export default function Nav({ onSearchClick }: { onSearchClick: () => void }) {
             onClick={() => setMenuOpen((v) => !v)}
             aria-label="Menu"
             aria-expanded={menuOpen}
+            aria-controls="mobile-nav"
             className="grid size-9 place-items-center rounded-lg border border-neutral-200
                        text-neutral-600 md:hidden dark:border-neutral-800
                        dark:text-neutral-400"
@@ -85,10 +86,8 @@ export default function Nav({ onSearchClick }: { onSearchClick: () => void }) {
             </svg>
           </button>
         </div>
-      </nav>
-
-      {menuOpen && (
-        <ul className="border-t border-neutral-200 px-5 py-2 md:hidden dark:border-neutral-800">
+        {menuOpen && (
+        <ul id="mobile-nav" className="border-t border-neutral-200 px-5 py-2 md:hidden dark:border-neutral-800">
           {SECTIONS.map((s) => (
             <li key={s.id}>
               <a
@@ -105,7 +104,8 @@ export default function Nav({ onSearchClick }: { onSearchClick: () => void }) {
             </li>
           ))}
         </ul>
-      )}
+        )}
+      </nav>
     </header>
   )
 }
@@ -150,18 +150,18 @@ function SearchTrigger({ onClick }: { onClick: () => void }) {
         type="button"
         onClick={onClick}
         className="hidden h-9 w-48 items-center gap-2 rounded-lg border border-neutral-200
-                   px-3 text-left text-sm text-neutral-400 transition
+                   px-3 text-left text-sm text-neutral-600 transition
                    hover:border-neutral-400 focus-visible:outline-2
                    focus-visible:outline-offset-2 focus-visible:outline-sky-500 sm:flex
-                   dark:border-neutral-800 dark:text-neutral-500
+                   dark:border-neutral-800 dark:text-neutral-400
                    dark:hover:border-neutral-600"
       >
         <SearchIcon />
         <span>Search…</span>
         <kbd
           className="ml-auto rounded border border-neutral-200 px-1.5 py-0.5 font-sans
-                     text-[10px] text-neutral-400 dark:border-neutral-700
-                     dark:text-neutral-500"
+                     text-[10px] text-neutral-600 dark:border-neutral-700
+                     dark:text-neutral-400"
         >
           Ctrl K
         </kbd>
@@ -173,7 +173,7 @@ function SearchTrigger({ onClick }: { onClick: () => void }) {
         onClick={onClick}
         aria-label="Search"
         className="grid size-9 place-items-center rounded-lg border border-neutral-200
-                   text-neutral-500 transition hover:border-neutral-400 sm:hidden
+                   text-neutral-600 transition hover:border-neutral-400 sm:hidden
                    dark:border-neutral-800 dark:text-neutral-400"
       >
         <SearchIcon />

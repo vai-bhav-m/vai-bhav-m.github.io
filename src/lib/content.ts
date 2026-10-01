@@ -70,7 +70,7 @@ export type ExperienceEntry = {
  */
 export type SearchItem = {
   id: string
-  kind: 'about' | 'project' | 'experience'
+  kind: 'project' | 'experience'
   title: string
   summary: string
   tags: string[]
@@ -252,18 +252,11 @@ export function getExperience(): ExperienceEntry[] {
  * why a for-loop beats a vector database. See docs/05-search-design.md
  */
 export function getSearchItems(): SearchItem[] {
-  const about = getAbout()
-
+  // About is deliberately excluded. Its bio is general-purpose prose, so it
+  // scored mid-table on almost every unrelated query (0.336 on "fluid
+  // dynamics", 0.317 on "kalman filter") — pure noise. And nobody searches to
+  // find the About section; the nav links straight to it.
   return [
-    {
-      id: 'about',
-      kind: 'about' as const,
-      title: about.name,
-      summary: about.tagline,
-      tags: [],
-      text: about.body,
-      url: '#about',
-    },
     ...getProjects().map((p) => ({
       id: `projects/${p.slug}`,
       kind: 'project' as const,

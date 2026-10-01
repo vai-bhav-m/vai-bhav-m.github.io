@@ -8,14 +8,34 @@ more than one working state away from the last thing that worked.
 that when something breaks later, you know it isn't the deployment. Debug one unknown
 at a time.
 
-| Phase | Outcome | Rough time |
+| Phase | Outcome | Status |
 | --- | --- | --- |
-| [0](#phase-0--scaffold-and-local-preview) | React app running at `localhost:5173` | 1 evening |
-| [1](#phase-1--the-real-site-live) | Your actual site, live at `username.github.io` | 1 weekend |
-| [2](#phase-2--keyword-search) | Working search | 1 afternoon |
-| [3](#phase-3--polish) | Tag filtering, scroll-spy, real design | ongoing |
-| [4](#phase-4--semantic-search-the-ml-layer) | Embeddings, in-browser | later |
-| [5](#phase-5--flask-only-when-triggered) | Backend, if a trigger fires | later, maybe never |
+| [0](#phase-0--scaffold-and-local-preview) | React app running locally | **done** |
+| [1](#phase-1--the-real-site-live) | Site live at vai-bhav-m.github.io | **done** |
+| [2](#phase-2--keyword-search) | Keyword search | **done** |
+| [3](#phase-3--polish) | Filtering, scroll-spy, OG image, a11y | **mostly done** |
+| [4](#phase-4--semantic-search-the-ml-layer) | Embeddings, in-browser | **done** |
+| [5](#phase-5--flask-only-when-triggered) | Backend | not triggered |
+
+> **Built out of order.** Phases 2 and 4 landed before Phase 3 finished, and the
+> Phase 1 deploy happened later than planned — the site ran locally for a while
+> before it was ever live. If you are picking this up, trust the status column
+> above over the narrative order below.
+
+## What is actually left
+
+- **Contact form is inert.** `FORM_ID` in `src/components/Contact.tsx` is an empty
+  string, so the section renders a setup note instead of a form. Needs a Google Form
+  plus its three `entry.*` field ids.
+- **About prose is placeholder.** `content/about.md` body was written by an assistant
+  from the resume, not by Vaibhav. It should be rewritten in his own voice.
+- **Resume PDF is withheld.** It carries a phone number and `public/` is world-readable
+  and search-indexed, so it is gitignored at the repo root. The Download button hides
+  itself while `resume:` is commented out in `about.md`.
+- **Phase 3 leftovers:** typography/design pass, and the accessibility items listed at
+  the end of [03-features-and-ui.md](03-features-and-ui.md).
+- **Not built, and deliberately so:** service worker / offline support, per-project
+  routes, analytics, any backend.
 
 ---
 

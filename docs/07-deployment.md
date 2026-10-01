@@ -36,9 +36,11 @@ broken" that you get to skip.
 4. **Turn Pages on:** repo → **Settings** → **Pages** → **Source** → select
    **GitHub Actions**.
 
-   This step is the one people miss. If Source is left on "Deploy from a branch", your
-   workflow will run, go green, and publish nothing — which is a confusing failure
-   because there's no error anywhere.
+   This step is the one people miss — **and it did happen here.** With Source left on
+   "Deploy from a branch", Pages served the repository verbatim: `/src/main.tsx` came
+   back as raw TypeScript the browser could not execute, so the site rendered a blank
+   white page. The workflow was green the whole time. If the deployed HTML references
+   `/src/main.tsx` instead of `/assets/index-*.js`, this is the cause.
 5. Push. Watch the **Actions** tab.
 
 ## The workflow

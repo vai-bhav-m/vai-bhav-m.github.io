@@ -38,9 +38,19 @@ export default function App() {
 
   return (
     <div className="min-h-dvh bg-white text-neutral-800 dark:bg-neutral-950 dark:text-neutral-300">
+      {/* Keyboard users would otherwise tab through the whole nav on every load. */}
+      <a
+        href="#main"
+        className="sr-only focus:not-sr-only focus:absolute focus:z-50 focus:m-3
+                   focus:rounded-lg focus:bg-white focus:px-4 focus:py-2
+                   focus:outline-2 focus:outline-sky-500 dark:focus:bg-neutral-900"
+      >
+        Skip to content
+      </a>
+
       <Nav onSearchClick={openSearch} />
 
-      <main className="mx-auto max-w-5xl px-5">
+      <main id="main" className="mx-auto max-w-5xl px-5">
         <About />
         <Experience />
         <Projects />
@@ -49,7 +59,7 @@ export default function App() {
 
       <footer
         className="mx-auto max-w-5xl border-t border-neutral-200 px-5 py-8 text-sm
-                   text-neutral-500 dark:border-neutral-800"
+                   text-neutral-500 dark:border-neutral-800 dark:text-neutral-400"
       >
         © {new Date().getFullYear()} {about.name}
       </footer>

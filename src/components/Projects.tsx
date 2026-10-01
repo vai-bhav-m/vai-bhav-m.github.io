@@ -46,7 +46,7 @@ export default function Projects() {
         onChange={setActive}
       />
 
-      <p className="mt-4 text-sm text-neutral-500" aria-live="polite">
+      <p className="mt-4 text-sm text-neutral-500 dark:text-neutral-400" aria-live="polite">
         {active
           ? `${visible.length} of ${projects.length} projects in ${active}`
           : `Showing ${visible.length} of ${projects.length} projects`}

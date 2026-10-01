@@ -77,15 +77,15 @@ function Entry({ entry }: { entry: ExperienceEntry }) {
       <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
         <h3 className="font-semibold text-neutral-900 dark:text-neutral-100">
           {entry.role}
-          <span className="font-normal text-neutral-500"> · {entry.org}</span>
+          <span className="font-normal text-neutral-500 dark:text-neutral-400"> · {entry.org}</span>
         </h3>
-        <span className="text-sm whitespace-nowrap text-neutral-400">
+        <span className="text-sm whitespace-nowrap text-neutral-600 dark:text-neutral-400">
           {formatDate(entry.start)} – {formatDate(entry.end)}
         </span>
       </div>
 
       {entry.location && (
-        <p className="mt-0.5 text-sm text-neutral-400">{entry.location}</p>
+        <p className="mt-0.5 text-sm text-neutral-600 dark:text-neutral-400">{entry.location}</p>
       )}
 
       <p className="mt-3 text-neutral-600 dark:text-neutral-400">{entry.summary}</p>

@@ -79,8 +79,9 @@ export default function Contact() {
 
           <a
             href={`mailto:${about.email}`}
-            className="mt-3 inline-block font-medium text-sky-600 underline
-                       underline-offset-4 hover:text-sky-500 dark:text-sky-400"
+            className="mt-3 inline-block font-medium text-sky-700 underline
+                       underline-offset-4 hover:text-sky-800 dark:text-sky-400
+                       dark:hover:text-sky-300"
           >
             {about.email}
           </a>
@@ -126,7 +127,8 @@ export default function Contact() {
                 rows={4}
                 required
                 className="mt-1.5 w-full rounded-lg border border-neutral-200 bg-transparent
-                           px-3 py-2 text-sm outline-none focus:border-sky-500
+                           px-3 py-2 text-sm outline-none focus-visible:outline-2
+                           focus-visible:outline-offset-2 focus-visible:outline-sky-500
                            dark:border-neutral-800"
               />
             </label>
@@ -184,7 +186,9 @@ function Field({
         name={name}
         required={required}
         className="mt-1.5 w-full rounded-lg border border-neutral-200 bg-transparent px-3
-                   py-2 text-sm outline-none focus:border-sky-500 dark:border-neutral-800"
+                   py-2 text-sm outline-none focus-visible:outline-2
+                   focus-visible:outline-offset-2 focus-visible:outline-sky-500
+                   dark:border-neutral-800"
       />
     </label>
   )
@@ -194,7 +198,7 @@ function SetupNote() {
   return (
     <div
       className="self-start rounded-lg border border-dashed border-neutral-300 p-4 text-sm
-                 text-neutral-500 dark:border-neutral-700"
+                 text-neutral-500 dark:border-neutral-700 dark:text-neutral-400"
     >
       <p className="font-medium text-neutral-700 dark:text-neutral-300">
         Contact form not configured yet

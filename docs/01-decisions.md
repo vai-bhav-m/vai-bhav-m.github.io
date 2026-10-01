@@ -135,3 +135,34 @@ this is an addition, not a rewrite.
 | **`all-MiniLM-L6-v2`** as the embedding model | 384 dimensions, ~25 MB quantized, widely used, and has both a Python and a browser build producing compatible vectors. | Search quality disappoints after real tuning. Options in [05-search-design.md](05-search-design.md#if-quality-disappoints). |
 | **Semantic search deferred to Phase 4** | Keyword search covers most real queries on a 25-item site and ships in an afternoon. The seams that make embeddings a drop-in go in during Phase 2. | Never — deferring it is the plan, not a compromise. |
 | **Generate the index locally, commit the JSON** | Installing PyTorch in CI takes minutes and would be the most likely thing to break your deploy. Deploys stay automatic; only indexing is manual. | Adding content gets frequent enough that forgetting to re-index becomes a real bug. |
+
+---
+
+## Decisions made during implementation
+
+These were not in the original plan. They came out of measurement, and several look
+arbitrary until you know what they are avoiding.
+
+| Decision | Why | Evidence |
+| --- | --- | --- |
+| **Chunk per bullet, not per item** | One vector per body averages every claim away. Each bullet is a distinct assertion and deserves its own vector. | "heart and medical scans" 0.420 → 0.504; "kalman filter" 0.321 → 0.415 |
+| **Keyword-index the body too** | Rare literal terms living only in a body were invisible to *both* layers — embeddings diluted them, MiniSearch never saw them. | `docker`, `cozypose`, `kalman`, `graphrag` all went from zero results to correct hits |
+| **Exclude About from search** | General-purpose bio prose matched everything weakly and crowded out real results. | scored 0.336 on "fluid dynamics", 0.317 on "kalman filter" |
+| **Score floor of 0.25** | Similarity search always returns *something*; without a floor you get confident garbage. | nonsense query peaked at 0.148, real matches cleared 0.26 |
+| **Self-host the model** | Removes the last third-party runtime dependency. The ONNX runtime was already bundled locally. | ~22.6 MB committed to `public/models/` |
+| **Filter on `domain`, not `tags`** | 26 tags across 9 projects, 20 used exactly once. A chip matching one item is a label, not a filter. | 26 chips → 4 |
+| **`archived: true` for older work** | Keeps the default page short without hiding anything from search. Deep links expand the section first, then scroll. | `useRevealOnNavigate.ts` |
+| **`robots.txt` allows every AI crawler** | This is a job-seeking site; being found is the point. LinkedIn blocks crawlers to protect a data moat — opposite incentives. | see `public/robots.txt` |
+
+---
+
+## Known gaps, deliberately left
+
+- **No service worker.** Self-hosting the model removed the *third-party* dependency,
+  not the *network* one. True offline was judged not worth the cache-invalidation
+  complexity.
+- **No per-project routes.** Single page with anchors; the GitHub Pages deep-link 404
+  problem never had to be solved.
+- **No analytics.**
+- **Contact form unconfigured.** `FORM_ID` is empty, so the section renders a setup
+  note rather than a broken form.

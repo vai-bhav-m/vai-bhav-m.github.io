@@ -17,14 +17,16 @@ no page loads.
 │                 [Download Resume]  [GitHub] [LinkedIn]       │
 │                                                              │
 ├──────────────────────────────────────────────────────────────┤
-│   #projects     [ all ] [ python ] [ ml ] [ web ]   ← tags   │
-│                 ┌────────┐ ┌────────┐ ┌────────┐             │
-│                 │ card   │ │ card   │ │ card   │             │
-│                 └────────┘ └────────┘ └────────┘             │
-├──────────────────────────────────────────────────────────────┤
-│   #experience   ●── Role, Company              2024–now      │
+│   #experience   ●── Role, Company              2026–now      │
 │                 │   what you did                             │
-│                 ●── Role, Company              2022–2024     │
+│                 ●── Role, Company              2025          │
+│                 [ Show 2 earlier roles ▾ ]                   │
+├──────────────────────────────────────────────────────────────┤
+│   #projects     [ All 9 ][ Robotics 3 ][ Computer Vision 2 ] │
+│                 ┌──────────────┐ ┌──────────────┐            │
+│                 │ card         │ │ card         │   2 cols   │
+│                 └──────────────┘ └──────────────┘   1 on 📱  │
+│                 [ Show 2 earlier projects ▾ ]                │
 ├──────────────────────────────────────────────────────────────┤
 │   #contact      Socials + email  │  Contact form             │
 └──────────────────────────────────────────────────────────────┘
@@ -147,7 +149,39 @@ highlights. Special-case "scrolled to the bottom" and activate the final item.
 Respect `prefers-reduced-motion` by disabling `scroll-behavior: smooth` for people who
 ask for less motion.
 
-## Projects and tag filtering
+## Projects: domain filtering, not tag filtering
+
+**Built differently from the original plan.** Filtering runs on a single-value
+`domain` field, while `tags` stay on the card as display + search signal only.
+
+The reason is measured: 9 projects carried **26 distinct tags, 20 of which appeared
+exactly once**. A chip matching one project is a label, not a filter. Four domains
+(Robotics, Computer Vision, Medical Imaging, ML Systems) give mutually-exclusive
+buckets that each match more than one thing, while `slam`, `mujoco`, `tensorrt` and
+the rest survive where they are actually useful — as signal for a reader scanning for
+their stack, and as keyword-search terms.
+
+`domain` is **required**; a missing one fails the build naming the file, rather than
+letting the project vanish from every filter.
+
+`getDomains()` derives the list and counts from the files, so a new domain appears the
+moment a project declares one.
+
+### Archived items
+
+Any content file can set `archived: true`. It drops out of the default view behind a
+"Show N earlier…" toggle but stays fully searchable.
+
+The subtle part: archived items are **not rendered at all**, so an anchor pointing at
+one does not exist in the DOM and a search result would scroll nowhere, silently.
+`useRevealOnNavigate` watches the hash, expands the section first, then scrolls on the
+next frame.
+
+Picking a domain searches **everything**, archived included — someone who clicked a
+filter has stated their interest, and hiding matches behind a second toggle would read
+as a broken filter.
+
+### Frontmatter
 
 Each project is a Markdown file with frontmatter:
 
@@ -156,27 +190,31 @@ Each project is a Markdown file with frontmatter:
 title: Semantic Search Portfolio
 slug: semantic-search
 summary: One sentence a recruiter reads in three seconds.
-tags: [python, ml, react]
+domain: Robotics          # required — drives the filter chips
+tags: [python, ml, react] # display + search only
+period: 2026
+order: 1
+archived: false           # optional; hides behind "Show N earlier"
 repo: https://github.com/you/repo
 demo: https://...
-featured: true
 ---
 ```
 
-Tags are collected from the files themselves — never maintain a separate list, it will
-drift. Filter buttons render from the union of all tags found.
+The `summary` field does double duty: it is the card text **and** the first thing
+embedded for semantic search. Search quality is summary quality.
 
-- Filtering is client-side array filtering. No library needed.
-- Keep an "All" option, selected by default.
-- Reflect the active tag in the URL hash (`#projects?tag=ml`) so a filtered view is
-  shareable. Optional, but cheap.
-- Animate cards in and out only if it's easy. Do not block v1 on it.
-- Show the filter UI only when you have enough projects for it to be useful — with
-  three projects it's clutter.
+Cards render in a 2-column grid from `md` up, 1 column below. The page shell is
+`max-w-5xl` to give the grid room; Experience stays capped at `max-w-3xl` because
+running prose past ~75 characters a line is tiring.
 
-## Resume download
+## Resume download — currently disabled
 
-Put `resume.pdf` in `public/`, link to `/resume.pdf` with a `download` attribute.
+**Not shipped.** The resume carries a phone number, and `public/` is served at the site
+root and indexed by search engines. The file is gitignored at the repo root instead,
+and the Download button renders only when `resume:` is set in `about.md` — it is
+commented out, so no broken link.
+
+To enable: put a stripped PDF in `public/`, uncomment the `resume:` line, push.
 
 - Name the file something meaningful — `Vaibhav-Resume.pdf`, not `resume-final-v3.pdf`.
   It's what lands in the downloader's folder.
@@ -242,10 +280,30 @@ Either way: add a honeypot field (a hidden input that real users leave empty, bo
 in) and drop submissions where it's non-empty. It costs five lines and stops most
 automated spam.
 
-## Accessibility and polish checklist
+## Accessibility — audited and fixed
 
-Not optional extras — these are what separates a portfolio that looks considered from
-one that looks templated.
+An audit was run against the built components with computed contrast ratios. Fixed:
+
+- **27 contrast failures.** `text-neutral-400` on white is 2.58:1 and `text-neutral-500`
+  on `neutral-950` is 4.18:1 — both fail 4.5:1. Now `text-neutral-600
+  dark:text-neutral-400` (7.81:1 / 7.66:1). Links moved `sky-600` → `sky-700` (4.02 →
+  5.86:1).
+- **Invalid listbox ownership** in the search overlay. A `listbox` may own only
+  `option` children and an `option` may not contain interactive descendants; the
+  original `<li><button role="option">` broke both, so `aria-activedescendant` could
+  not resolve and arrow-key navigation announced nothing. The `<li>` is now the option.
+- **Unreachable focusable elements.** The backdrop was a `<button>` sitting in the tab
+  order that `Tab` was unconditionally swallowing. It is now an `aria-hidden` div;
+  Escape is the keyboard route out.
+- **`role="combobox"` + `aria-expanded`** added to the search input — the
+  `aria-autocomplete`/`aria-activedescendant` cluster is defined on combobox, not
+  textbox.
+- **`outline-none` with no substitute** on three form controls; now `focus-visible`
+  outlines.
+- Mobile menu moved inside the `<nav>` landmark, `aria-controls` on disclosure
+  toggles, and a skip-to-content link.
+
+### Still worth checking by hand
 
 - Every interactive element reachable by Tab, with a visible focus ring.
 - The search overlay traps focus while open and closes on Escape.

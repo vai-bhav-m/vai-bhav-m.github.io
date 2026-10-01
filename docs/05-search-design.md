@@ -1,261 +1,211 @@
 # Search design
 
-**Scope note:** search *ships in v1 as keyword search*. The semantic/embedding layer is
-a later addition. This doc covers both, and the "keeping room for it" section is the
-part that matters right now — it's what makes the upgrade a drop-in rather than a
-rewrite.
+**Status: built and shipped.** This describes what exists, not a plan.
 
-## What we're building, precisely
+## What it does
 
-One vector per **item**, where an item is a project or an experience entry. A query is
-embedded, compared against every item, and the best match is pointed to.
+Two layers, kept permanently because they fail in opposite directions:
 
-That's the whole design. No document chunking, no passage retrieval, no reranking, no
-generated answers. The result of a search is "this project is what you're looking
-for" — which is what a portfolio search is actually for.
-
-This scale is worth stating out loud, because it makes most of the usual search
-engineering irrelevant:
-
-| | Count |
-| --- | --- |
-| Projects | maybe 6–15 |
-| Experience entries | maybe 3–6 |
-| About / misc | 1–2 |
-| **Total items to index** | **~10–25** |
-
-Twenty-five vectors. Not twenty-five thousand.
-
-## The two layers
-
-| | Ships | Cost | Good at | Bad at |
+| | Ships as | Cost | Good at | Bad at |
 | --- | --- | --- | --- | --- |
-| **Keyword** (MiniSearch) | v1 | ~10 KB | exact terms, tech names, acronyms, typos | synonyms, paraphrase |
-| **Semantic** (embeddings) | later | ~25 MB model | meaning, related concepts | exact rare strings |
+| **Keyword** (MiniSearch) | ~10 KB | instant | exact terms, tech names, acronyms, typos | synonyms, paraphrase |
+| **Semantic** (embeddings) | ~22 MB model | seconds on first use | meaning, related concepts | exact rare strings |
 
-Keyword search alone is genuinely fine for a portfolio. Someone typing "pytorch" or
-"kubernetes" gets the right project immediately. The semantic layer earns its place
-for queries like "have you done anything with images?" matching a project whose text
-says "computer vision" — real, but a nice-to-have.
+Keyword results render on the keystroke. Semantic results merge in when the model is ready. If
+the model never loads, keyword search still works and the footer says "keyword only".
 
-Both stay permanently. They fail in opposite directions, so the merged result is
-better than either.
+## The index
 
----
+**67 chunks from 16 items**, 384 dimensions, 238 KB raw / ~73 KB gzipped.
 
-## What gets embedded (and what doesn't)
+Each item contributes:
 
-**Do not embed the full project writeup.** Embed a short representative string built
-from the frontmatter:
+- one **card** chunk — `"{title}. {summary} Tags: {tags}."` — so short queries land on the item
+  as a whole;
+- one chunk **per bullet** of its body.
+
+### Why per bullet, and not one vector per item
+
+This is the decision that made search work. With one vector per body, "Dockerized and deployed a
+TensorRT engine on AWS EC2" gets averaged together with "DeepLabV3+ semantic segmentation" and
+"Lidar-camera fusion" until none of the three is findable. Measured, splitting them:
 
 ```
-"Semantic Search Portfolio. A static portfolio site with in-browser semantic
-search over projects. Tags: python, ml, react."
+heart and medical scans           0.420 → 0.504
+kalman filter                     0.321 → 0.415
+retrieval augmented generation    0.248 → 0.287   (crossed the floor)
 ```
 
-Title, summary, tags. Roughly 30–60 words.
+"kalman filter" is the clearest case — that term exists *only* in a body bullet and was invisible
+before.
 
-Two reasons, and the first is a trap worth knowing about:
+Chunking lives in [`ml/chunking.py`](../ml/chunking.py). A bullet list becomes one chunk per
+bullet; prose blocks only split when they exceed `MAX_WORDS` (150). Fragments under `MIN_WORDS`
+(12) are glued to their neighbour, because a stub like "## Setup" embeds to a vague vector that
+matches everything weakly.
 
-1. **The model truncates at 256 tokens (~190 words), silently.** No error, no warning.
-   Embed an 800-word writeup and you get a vector representing only its opening
-   paragraph, while believing you indexed the whole thing. Short inputs sidestep this
-   completely.
-2. **A summary embeds better than a full document.** Averaging a long, topic-varied
-   document into one 384-dimension vector blurs it toward the average of everything it
-   mentions. A tight summary produces a sharper, more distinctive vector.
+### Every body chunk is prefixed with its title
 
-So the thing that makes the index simple *also* makes it more accurate. The summary
-field you'd write for the project card anyway is exactly the right input.
+Not for weighting — for context. A chunk reading *"It handles retries with exponential backoff"*
+is unsearchable when the model has no idea what "it" refers to.
 
-> Optional refinement if results feel thin: append the document's first paragraph,
-> truncated to ~120 words. Measure before and after — don't assume it helps.
+### About is deliberately not indexed
 
-## The index file
+A general-purpose bio matches everything weakly. It scored 0.336 on "fluid dynamics" and 0.317 on
+"kalman filter" — pure noise crowding out real results. And nobody searches to find the About
+section; the nav links straight to it.
+
+**This exclusion exists in two places and they must stay in sync:** `getSearchItems()` in
+[`src/lib/content.ts`](../src/lib/content.ts) and `collect()` in
+[`ml/build_index.py`](../ml/build_index.py).
+
+### The truncation guard
+
+`all-MiniLM-L6-v2` discards input past 256 tokens (~190 words) **silently** — no error, no
+warning. `build_index.py` therefore **fails the build**, naming the file and word count, if any
+chunk exceeds 185 words. Without it you would ship an index where half your content embedded to
+nothing and never notice. Longest current chunk: 52 words.
+
+## Index file format
 
 ```jsonc
 {
   "model": "sentence-transformers/all-MiniLM-L6-v2",
   "dim": 384,
   "normalized": true,
-  "generated": "2026-09-20T14:00:00Z",
-  "items": [
-    {
-      "id": "projects/semantic-search",
-      "kind": "project",              // or "experience" | "about"
-      "title": "Semantic Search Portfolio",
-      "summary": "A static portfolio site with in-browser semantic search.",
-      "url": "/#semantic-search",
-      "vector": [0.0123, -0.0456 /* ... 384 floats ... */]
-    }
+  "generated": "2026-09-30T...Z",
+  "chunks": [
+    { "item": "projects/nafnet-deblur", "vector": [0.0123, -0.0456 /* ...384 */] }
   ]
 }
 ```
 
-`model` is asserted against the model the browser loads. Vectors from two different
-models compare without erroring and produce confident nonsense — a genuinely nasty bug
-to chase, so fail loudly at load instead.
+Only the owning item id and the vector ship. Titles, summaries and urls already live in the bundle
+via `content.ts`, and chunk text is never displayed.
 
-`normalized: true` means vectors are unit length, so cosine similarity is just a dot
-product. No square roots at runtime, no divide-by-zero on empty text.
+`model` is asserted at load. Vectors from two different models compare without erroring and return
+confident nonsense — a genuinely nasty bug to chase, so it fails loudly instead.
 
-**Size:** 25 items × 384 floats ≈ 70 KB of JSON, ~30 KB gzipped. Small enough to
-`import()` as a lazy chunk rather than `fetch()` — Vite code-splits it automatically
-and it never touches first paint.
+`normalized: true` means every vector is unit length, so cosine similarity reduces to a dot
+product — no square roots at runtime, no divide-by-zero on empty text.
 
 ## Scoring
 
 ```ts
-// vectors are unit length, so cosine similarity == dot product
 let score = 0
-for (let i = 0; i < query.length; i++) score += query[i] * item[i]
+for (let i = 0; i < queryVector.length; i++) score += queryVector[i] * chunk.vector[i]
 ```
 
-25 items × 384 dimensions = 9,600 multiply-adds per search. That is nothing. Run it on
-every keystroke without debouncing the math (debounce the *embedding*, which is the
-expensive part).
+An item scores as its **best chunk, never an average**. A query that nails one bullet should rank
+the item highly even if the rest is about something else.
 
-**Set a score floor around 0.25.** Similarity search always returns something — the
-nearest item is still the nearest even when it's irrelevant. Below the floor, show an
-honest empty state. Calibrate by typing deliberate nonsense and seeing what comes back.
+67 chunks × 384 dims ≈ 26,000 multiply-adds — microseconds. **No vector database**, and none
+needed until roughly 10,000 chunks.
 
----
+**Score floor: 0.25.** Calibrated empirically, not guessed — deliberate nonsense (`asdkjh nonsense
+qqq`) topped out at 0.148 while every real match cleared 0.26. Similarity search always returns
+*something*, so without a floor you get confident garbage.
 
-## Keeping room for it: the v1 contract
+## Keyword layer indexes the body too
 
-This is the part to get right now, while building keyword search. Three seams, and if
-they exist, adding embeddings later touches almost nothing.
+`title`, `summary`, `tags` **and `text`** (the full body), with `text` unboosted.
 
-### 1. `src/lib/content.ts` exposes searchable items
+This was a real bug, found while chasing a query the embeddings couldn't handle. Rare literal
+terms living only in a body were invisible to **both** layers at once — embeddings diluted them
+across the bullet, and MiniSearch had never seen them. Measured before and after:
 
-```ts
-export type SearchItem = {
-  id: string
-  kind: 'project' | 'experience' | 'about'
-  title: string
-  summary: string
-  tags: string[]
-  url: string
-}
-
-export function getSearchItems(): SearchItem[]
+```
+docker     (no results) → Scout Robotics
+cozypose   (no results) → ABB Robotics
+kalman     (no results) → UR5 Calibration
+graphrag   (no results) → ABB Robotics
 ```
 
-Both the keyword index and the Python embedding script consume this same shape. One
-definition of "what is searchable", used by both layers.
+The lesson generalises: when one layer fails on a query, check whether the *other* layer should
+have caught it before tuning the one that failed.
 
-### 2. `src/lib/search.ts` owns ranking behind one function
+## Merging
 
-```ts
-export type Result = { item: SearchItem; score: number; via: 'keyword' | 'semantic' }
+1. Keyword results render immediately (`searchKeyword` is synchronous).
+2. Semantic results compute when the model is ready.
+3. Dedupe by item id. An item found by **both** gets a **+0.25 bonus** and ranks above one found by
+   either alone — agreement between independent signals is real evidence.
+4. MiniSearch scores are unbounded, so they're normalised against the top hit before merging, to
+   sit on roughly the same 0–1 footing as cosine.
 
-export async function search(query: string): Promise<Result[]>
-```
+## The model, and where it's served from
 
-The overlay component calls this and renders what comes back. It knows nothing about
-MiniSearch, embeddings, or merging. When the semantic layer arrives, only the body of
-this function changes.
-
-### 3. The UI never blocks on search being ready
-
-Build the overlay so results arrive asynchronously and can be *replaced*. In v1
-keyword results resolve instantly, so this looks like pointless indirection. It is
-what lets semantic results stream in a few seconds later without a rewrite of the
-component.
-
-Also: put `ml/` and a `npm run build:index` script placeholder in the repo from day
-one, even empty. A directory that already exists gets used; one that has to be created
-becomes a decision you keep postponing.
-
-**If those three seams exist, the later work is:** write `build_index.py`, add
-`embedder.ts`, and extend the body of `search()` to merge two score lists. No component
-changes.
-
----
-
-## Later: adding the semantic layer
-
-### Build side (Python, on your machine)
-
-```python
-from sentence_transformers import SentenceTransformer
-
-model = SentenceTransformer("sentence-transformers/all-MiniLM-L6-v2")
-texts = [f"{i['title']}. {i['summary']} Tags: {', '.join(i['tags'])}." for i in items]
-vectors = model.encode(texts, normalize_embeddings=True)
-```
-
-`normalize_embeddings=True` is what makes the runtime a plain dot product. Don't skip
-it and normalize in JavaScript instead.
-
-Sanity-check in Python before touching the frontend: embed a test query, score it
-against the index, print the top 3. If the ranking is wrong here it will be wrong in
-the browser, and Python is a far easier place to debug it.
-
-### Browser side
-
-`all-MiniLM-L6-v2` has two builds that produce compatible vectors:
-
-| Where | Package | Identifier |
+| | Package | Identifier |
 | --- | --- | --- |
 | Build time | `sentence-transformers` | `sentence-transformers/all-MiniLM-L6-v2` |
 | Browser | `@huggingface/transformers` | `Xenova/all-MiniLM-L6-v2` |
 
-The second is an ONNX export of the first. Verify the compatibility once by hand:
-embed the same sentence in both and confirm the dot product is ~0.99. Quantization
-makes it not exactly 1.0; that's expected.
+The second is an ONNX export of the first; they produce compatible vectors, which is the thing the
+whole architecture rests on.
+
+**The model is self-hosted**, in `public/models/Xenova/all-MiniLM-L6-v2/` (~22.6 MB). The ONNX
+runtime WASM was already bundled locally by Vite, so there is now no third-party runtime
+dependency at all.
 
 ```ts
-let pipe: Promise<unknown> | null = null
-
-export function getEmbedder() {
-  if (!pipe) {
-    pipe = import('@huggingface/transformers').then(({ pipeline }) =>
-      pipeline('feature-extraction', 'Xenova/all-MiniLM-L6-v2', { dtype: 'q8' })
-    )
-  }
-  return pipe
-}
+env.allowLocalModels = true
+env.allowRemoteModels = false              // ← load-bearing
+env.localModelPath = `${import.meta.env.BASE_URL}models/`
 ```
 
-- **Dynamic `import()`, never a top-level import.** A static import pulls the library
-  into your main bundle and delays first paint for every visitor, including the ones
-  who never search.
-- **Start loading when the overlay opens**, not on page load. That's the first moment
-  you know the visitor intends to search.
-- **Cache the pipeline** in a module-level variable so it initializes once per session.
-- Model weights download from the Hugging Face CDN on first use and the browser caches
-  them. To drop that third-party runtime dependency, copy the model files into
-  `public/models/` and point transformers.js there — costs ~25 MB in the repo.
+`allowRemoteModels = false` is the important line. Without it, a missing local file **silently
+falls back to the HF CDN** and self-hosting would appear to work while doing nothing.
+
+`BASE_URL` rather than a hard-coded `/` so this survives a move to a project site.
+
+> This removes a *third-party* dependency, not the *network* one. The site still has to be
+> reachable. True offline would need a service worker caching the shell and model — not built.
+
+### Loading
+
+- **Dynamic `import()`, never a top-level import.** A static import pulls the library and WASM into
+  the main bundle and delays first paint for every visitor, including those who never search.
+- **Starts when the overlay opens** — the first moment you know the visitor intends to search.
+- Pipeline cached in a module-level variable so it initialises once per session.
 
 > **Gotcha:** most tutorials use the older `@xenova/transformers`, whose options differ
-> (`{ quantized: true }` vs `{ dtype: 'q8' }`). If you paste a snippet and the options
-> silently do nothing, check which package it was written for.
+> (`{ quantized: true }` vs `{ dtype: 'q8' }`). If you paste a snippet and the options silently do
+> nothing, check which package it was written for.
 
-### Merging
+## Costs, honestly
 
-1. Keyword results render immediately.
-2. Semantic results compute when the model is ready.
-3. Dedupe by `id`. An item found by both ranks above one found by either alone —
-   agreement between independent signals is real evidence.
-4. Interleave the rest by score.
+| | |
+| --- | --- |
+| Index chunk | 238 KB raw, ~73 KB gzipped — lazy, never touches first paint |
+| ONNX runtime WASM | 25.6 MB (bundled, served from this site) |
+| Model weights | 22.6 MB (self-hosted) |
 
-The visitor never sees a blocking spinner. They see results that quietly get better.
+First search on a cold cache pulls ~48 MB. That is why keyword results render immediately rather
+than waiting, and why nothing loads until the overlay opens.
+
+## Known weak spots
+
+- **"docker and cloud deployment" as a phrase** still scores 0.135 semantically. It works via the
+  keyword layer, so single-word "docker" is fine, but the phrase is not.
+- Search quality *is* summary and bullet quality. The biggest available improvement is editing
+  content, not code.
 
 ## If quality disappoints
 
 In order — the cheap fixes are also the likely culprits.
 
-1. **Read your summaries.** With one vector per item, search quality *is* summary
-   quality. A vague summary is an unsearchable project. This is almost always the
-   problem, and it's a writing fix, not a code fix.
-2. **Check tags are included** in the embedded string. They carry a lot of signal for
-   very little text.
-3. **Tune the score floor.** Too high hides good results; too low shows noise.
-4. **Weight keyword higher for short queries.** One or two words usually means someone
-   wants an exact term, not a concept.
-5. **Only then change the model.** `bge-small-en-v1.5` is a common same-size upgrade.
-   Note it expects a query prefix ("Represent this sentence for searching relevant
-   passages: ") — read the model card rather than assuming it's a drop-in. Both sides
-   must change together, and the `model` field in the index is what catches you if they
-   don't.
+1. **Read the summaries and bullets.** Usually the content is vague, not the model.
+2. **Check whether the other layer should have caught it.** See the body-indexing bug above.
+3. **Tune the score floor** (0.25). Too high hides good results; too low shows noise.
+4. **Only then change the model.** `bge-small-en-v1.5` is a common same-size upgrade, but expects a
+   query prefix, so it is not a drop-in. Both sides must change together; the `model` field is what
+   catches you if they don't.
+
+## Rebuilding
+
+```powershell
+npm run build:index    # python ml/build_index.py
+```
+
+Run it whenever `content/` changes, and commit `src/data/search-index.json`. Forgetting means the
+live site searches stale content — the page will show new text that search cannot find.

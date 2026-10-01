@@ -23,20 +23,20 @@ export default function Prose({ children }: { children: string }) {
           ),
           p: ({ children }) => <p className="leading-relaxed">{children}</p>,
           ul: ({ children }) => (
-            <ul className="list-disc space-y-1.5 pl-5 marker:text-neutral-400">
+            <ul className="list-disc space-y-1.5 pl-5 marker:text-neutral-600 dark:marker:text-neutral-400">
               {children}
             </ul>
           ),
           ol: ({ children }) => (
-            <ol className="list-decimal space-y-1.5 pl-5 marker:text-neutral-400">
+            <ol className="list-decimal space-y-1.5 pl-5 marker:text-neutral-600 dark:marker:text-neutral-400">
               {children}
             </ol>
           ),
           a: ({ href, children }) => (
             <a
               href={href}
-              className="text-sky-600 underline underline-offset-2 hover:text-sky-500
-                         dark:text-sky-400"
+              className="text-sky-700 underline underline-offset-2 hover:text-sky-800
+                         dark:text-sky-400 dark:hover:text-sky-300"
             >
               {children}
             </a>

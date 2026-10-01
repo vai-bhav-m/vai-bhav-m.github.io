@@ -4,7 +4,6 @@ import type { Result } from '../lib/search'
 import { warmUpEmbedder } from '../lib/embedder'
 
 const KIND_LABEL: Record<Result['item']['kind'], string> = {
-  about: 'About',
   project: 'Project',
   experience: 'Experience',
 }
@@ -130,7 +129,8 @@ export default function SearchOverlay({
         if (results[selected]) go(results[selected])
         break
       case 'Tab':
-        // Nothing else in here is focusable, so trapping focus is: don't leave.
+        // The input is now genuinely the only focusable element in the dialog
+        // (backdrop is a div, results are <li>), so this is a real trap.
         event.preventDefault()
         break
     }
@@ -145,11 +145,13 @@ export default function SearchOverlay({
       aria-modal="true"
       aria-label="Search"
     >
-      <button
-        type="button"
-        aria-label="Close search"
+      {/* A div, not a button: as a button it sat in the tab order but could
+          never be reached, because Tab is trapped below. Escape is the keyboard
+          route out, so the backdrop is pointer-only and hidden from AT. */}
+      <div
+        aria-hidden
         onClick={onClose}
-        className="absolute inset-0 cursor-default bg-neutral-900/40 backdrop-blur-sm"
+        className="absolute inset-0 bg-neutral-900/40 backdrop-blur-sm"
       />
 
       <div
@@ -166,28 +168,35 @@ export default function SearchOverlay({
             onKeyDown={onKeyDown}
             placeholder="Search projects and experience…"
             aria-label="Search projects and experience"
+            // aria-autocomplete / aria-activedescendant are defined on combobox,
+            // not textbox. Without the role, screen readers ignore them and
+            // arrow-key navigation announces nothing.
+            role="combobox"
+            aria-expanded={results.length > 0}
             aria-autocomplete="list"
             aria-controls="search-results"
             aria-activedescendant={
               results[selected] ? `search-result-${selected}` : undefined
             }
-            className="h-14 flex-1 bg-transparent text-base outline-none
-                       placeholder:text-neutral-400 dark:text-neutral-100"
+            className="h-14 flex-1 bg-transparent text-base outline-none focus-visible:outline-2
+                       focus-visible:outline-offset-2 focus-visible:outline-sky-500
+                       placeholder:text-neutral-600 dark:placeholder:text-neutral-400
+                       dark:text-neutral-100"
           />
           <kbd
             className="rounded border border-neutral-200 px-1.5 py-0.5 text-[10px]
-                       text-neutral-400 dark:border-neutral-700 dark:text-neutral-500"
+                       text-neutral-600 dark:border-neutral-700 dark:text-neutral-400"
           >
             Esc
           </kbd>
         </div>
 
         {query.trim() === '' ? (
-          <p className="px-4 py-8 text-center text-sm text-neutral-500">
+          <p className="px-4 py-8 text-center text-sm text-neutral-600 dark:text-neutral-400">
             Search {corpus.projects} projects and {corpus.experience} roles.
           </p>
         ) : results.length === 0 ? (
-          <p className="px-4 py-8 text-center text-sm text-neutral-500">
+          <p className="px-4 py-8 text-center text-sm text-neutral-600 dark:text-neutral-400">
             No matches for “{query.trim()}”.
           </p>
         ) : (
@@ -197,34 +206,37 @@ export default function SearchOverlay({
             role="listbox"
             className="max-h-[50vh] overflow-y-auto p-2"
           >
+            {/* The <li> IS the option. A listbox may only own option children,
+                and an option may not contain interactive descendants — the
+                previous <li><button role="option"> broke both, so
+                aria-activedescendant could not resolve. Keyboard activation
+                lives on the input's Enter handler; this is pointer-only. */}
             {results.map((result, i) => (
-              <li key={result.item.id}>
-                <button
-                  type="button"
-                  id={`search-result-${i}`}
-                  data-index={i}
-                  role="option"
-                  aria-selected={i === selected}
-                  onClick={() => go(result)}
-                  onMouseMove={() => setSelected(i)}
-                  className={`w-full rounded-lg px-3 py-2.5 text-left transition ${
-                    i === selected
-                      ? 'bg-neutral-100 dark:bg-neutral-800'
-                      : 'hover:bg-neutral-50 dark:hover:bg-neutral-800/50'
-                  }`}
-                >
-                  <div className="flex items-baseline gap-2">
-                    <span className="text-sm font-medium text-neutral-900 dark:text-neutral-100">
-                      {result.item.title}
-                    </span>
-                    <span className="text-[10px] tracking-wide text-neutral-400 uppercase">
-                      {KIND_LABEL[result.item.kind]}
-                    </span>
-                  </div>
-                  <p className="mt-0.5 line-clamp-2 text-sm text-neutral-500">
-                    {result.item.summary}
-                  </p>
-                </button>
+              <li
+                key={result.item.id}
+                id={`search-result-${i}`}
+                data-index={i}
+                role="option"
+                aria-selected={i === selected}
+                onClick={() => go(result)}
+                onMouseMove={() => setSelected(i)}
+                className={`cursor-pointer rounded-lg px-3 py-2.5 transition ${
+                  i === selected
+                    ? 'bg-neutral-100 dark:bg-neutral-800'
+                    : 'hover:bg-neutral-50 dark:hover:bg-neutral-800/50'
+                }`}
+              >
+                <div className="flex items-baseline gap-2">
+                  <span className="text-sm font-medium text-neutral-900 dark:text-neutral-100">
+                    {result.item.title}
+                  </span>
+                  <span className="text-[10px] tracking-wide text-neutral-600 uppercase dark:text-neutral-300">
+                    {KIND_LABEL[result.item.kind]}
+                  </span>
+                </div>
+                <p className="mt-0.5 line-clamp-2 text-sm text-neutral-600 dark:text-neutral-300">
+                  {result.item.summary}
+                </p>
               </li>
             ))}
           </ul>
@@ -232,7 +244,7 @@ export default function SearchOverlay({
 
         <div
           className="flex items-center gap-4 border-t border-neutral-200 px-4 py-2
-                     text-[11px] text-neutral-400 dark:border-neutral-800"
+                     text-[11px] text-neutral-600 dark:border-neutral-800 dark:text-neutral-400"
         >
           <span>↑↓ navigate</span>
           <span>↵ open</span>

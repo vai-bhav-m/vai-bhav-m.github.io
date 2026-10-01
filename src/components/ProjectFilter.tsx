@@ -59,7 +59,7 @@ function Chip({
                   }`}
     >
       {label}
-      <span className={selected ? 'ml-1.5 opacity-60' : 'ml-1.5 text-neutral-400'}>
+      <span className={selected ? 'ml-1.5 opacity-60' : 'ml-1.5 text-neutral-600 dark:text-neutral-400'}>
         {count}
       </span>
     </button>

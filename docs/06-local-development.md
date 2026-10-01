@@ -10,7 +10,7 @@ it before a single thing is pushed.
 | --- | --- | --- | --- |
 | Node.js | LTS (24.x installed) | `node --version` | Runs Vite and the build |
 | npm | ships with Node | `npm --version` | Packages |
-| Python | 3.11+ | `python --version` | Embedding index (Phase 4 only) |
+| Python | 3.11+ **CPython** | `py -3.11 --version` | Embedding index + OG image |
 | Git | any recent | `git --version` | Version control, deploys |
 
 Then, once:
@@ -86,10 +86,19 @@ network (guest Wi-Fi is often isolated).
 Not needed until you build the embedding index.
 
 ```powershell
-python -m venv .venv
+py -3.11 -m venv .venv
 .\.venv\Scripts\Activate.ps1
-pip install sentence-transformers
+pip install torch --index-url https://download.pytorch.org/whl/cpu
+pip install -r ml/requirements.txt
 ```
+
+> **Use `py -3.11`, not `python`.** On this machine `python` resolves to an MSYS2
+> build whose venv reports platform `mingw_x86_64`. PyTorch only publishes
+> `win_amd64` wheels, so `pip install torch` finds nothing and tries to build from
+> source. The `py` launcher points at real CPython in `C:\Program Files\Python311`.
+>
+> Install the **CPU-only** torch wheel first — the default pulls ~2 GB of CUDA you
+> will never use.
 
 **If activation is blocked** with "running scripts is disabled on this system", that's
 PowerShell's execution policy. Allow it for the current terminal only:
@@ -107,11 +116,16 @@ hundreds of megabytes and fully reproducible from `ml/requirements.txt`.
 Then:
 
 ```powershell
-npm run build:index    # wraps: python ml/build_index.py
+npm run build:index    # python ml/build_index.py  -> src/data/search-index.json
+npm run build:og       # python ml/build_og_image.py -> public/og.png
+npm run build:assets   # both
 ```
 
-This writes `src/data/search-index.json`. **Commit that file** — it's a build artifact,
-but committing it is what keeps PyTorch out of your deploy pipeline.
+**Commit both outputs.** They are build artifacts, but committing them is what keeps
+PyTorch out of the deploy pipeline.
+
+Re-run `build:index` after **any** change under `content/`. Forgetting means the live
+site shows new text that search cannot find — a silent failure with no error anywhere.
 
 ## Useful scripts to define
 

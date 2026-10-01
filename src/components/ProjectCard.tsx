@@ -14,7 +14,7 @@ export default function ProjectCard({ project }: { project: Project }) {
           {project.title}
         </h3>
         {project.period && (
-          <span className="text-sm text-neutral-400">{project.period}</span>
+          <span className="text-sm text-neutral-600 dark:text-neutral-400">{project.period}</span>
         )}
       </div>
 
@@ -47,7 +47,7 @@ export default function ProjectCard({ project }: { project: Project }) {
               href={project.repo}
               target="_blank"
               rel="noopener noreferrer"
-              className="text-sky-600 hover:text-sky-500 dark:text-sky-400"
+              className="text-sky-700 hover:text-sky-800 dark:text-sky-400 dark:hover:text-sky-300"
             >
               Source →
             </a>
