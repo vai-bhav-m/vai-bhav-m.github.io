@@ -22,7 +22,8 @@ export type About = {
   tagline: string
   location?: string
   email: string
-  resume: string
+  /** Omitted until a publishable resume exists — the button hides when unset. */
+  resume?: string
   socials: Social[]
   body: string
 }
@@ -148,7 +149,7 @@ export function getAbout(): About {
     tagline: str(data, 'tagline', path),
     location: optStr(data, 'location'),
     email: str(data, 'email', path),
-    resume: optStr(data, 'resume') ?? '/resume.pdf',
+    resume: optStr(data, 'resume'),
     socials,
     body,
   }

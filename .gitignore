@@ -23,3 +23,7 @@ npm-debug.log*
 
 # LinkedIn export, kept locally as a content source - not for publishing
 linkedin-profile.pdf
+
+# Resume carries a phone number. Untracked until a stripped version replaces it;
+# see the commented-out `resume:` line in content/about.md to re-enable the button.
+public/Vaibhav-Mahapatra-Resume.pdf

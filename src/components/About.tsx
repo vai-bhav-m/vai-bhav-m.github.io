@@ -23,16 +23,18 @@ export default function About() {
       </div>
 
       <div className="mt-8 flex flex-wrap items-center gap-3">
-        <a
-          href={about.resume}
-          download
-          className="rounded-lg bg-neutral-900 px-4 py-2.5 text-sm font-medium text-white
-                     transition hover:bg-neutral-700 focus-visible:outline-2
-                     focus-visible:outline-offset-2 focus-visible:outline-sky-500
-                     dark:bg-neutral-100 dark:text-neutral-900 dark:hover:bg-neutral-300"
-        >
-          Download resume
-        </a>
+        {about.resume && (
+          <a
+            href={about.resume}
+            download
+            className="rounded-lg bg-neutral-900 px-4 py-2.5 text-sm font-medium text-white
+                       transition hover:bg-neutral-700 focus-visible:outline-2
+                       focus-visible:outline-offset-2 focus-visible:outline-sky-500
+                       dark:bg-neutral-100 dark:text-neutral-900 dark:hover:bg-neutral-300"
+          >
+            Download resume
+          </a>
+        )}
 
         {about.socials.map((s) => (
           <a

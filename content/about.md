@@ -3,7 +3,9 @@ name: Vaibhav Mahapatra
 tagline: Robotics perception R&D — 6D pose estimation, learned control, and the gap between a good benchmark and a working robot.
 location: Santa Clara, California
 email: vmahapa1@jh.edu
-resume: /Vaibhav-Mahapatra-Resume.pdf
+# Uncomment once a publishable resume (phone number removed) is in public/.
+# The Download button hides itself while this is unset.
+# resume: /Vaibhav-Mahapatra-Resume.pdf
 socials:
   - label: LinkedIn
     url: https://www.linkedin.com/in/vaibhav-mahapatra-aa0a591a8/
