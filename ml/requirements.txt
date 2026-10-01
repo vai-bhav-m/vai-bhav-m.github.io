@@ -1,0 +1,7 @@
+# Phase 4 only. Install inside a venv:
+#   python -m venv .venv
+#   .\.venv\Scripts\Activate.ps1
+#   pip install -r ml/requirements.txt
+#
+# Left unpinned until Phase 4; run `pip freeze > ml/requirements.txt` once it works.
+sentence-transformers

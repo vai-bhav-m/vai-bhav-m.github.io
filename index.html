@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="color-scheme" content="light dark" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+
+    <title>Vaibhav — Portfolio</title>
+    <meta name="description" content="Projects, experience, and writing." />
+
+    <!--
+      Theme, decided before the first paint.
+
+      This must stay INLINE and SYNCHRONOUS here in <head>. The browser stops and
+      runs it before painting anything, so the correct theme is on <html> from the
+      very first frame. Move this into React (or into a module script) and visitors
+      on dark mode get a white flash while the bundle loads.
+
+      See docs/03-features-and-ui.md#the-flash-you-must-prevent
+    -->
+    <script>
+      (function () {
+        try {
+          var stored = localStorage.getItem('theme')
+          var dark =
+            stored === 'dark' ||
+            (stored !== 'light' &&
+              window.matchMedia('(prefers-color-scheme: dark)').matches)
+          if (dark) document.documentElement.classList.add('dark')
+        } catch (e) {
+          /* localStorage throws in some privacy modes; light is a fine fallback */
+        }
+      })()
+    </script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

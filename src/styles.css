@@ -1,0 +1,37 @@
+@import "tailwindcss";
+
+/*
+  Make `dark:` follow the .dark class that index.html sets, instead of reading
+  prefers-color-scheme directly.
+
+  Without this line the manual toggle appears to do nothing while the OS setting
+  still works — a confusing half-broken state. Tailwind v4 only.
+*/
+@custom-variant dark (&:where(.dark, .dark *));
+
+/* Design tokens. Define both palettes up front — retrofitting dark mode onto
+   colours picked only for light mode is the annoying way to do this. */
+@theme {
+  --color-ink: oklch(0.22 0.02 260);
+  --color-ink-dim: oklch(0.50 0.02 260);
+  --color-paper: oklch(0.99 0.004 260);
+  --color-edge: oklch(0.90 0.01 260);
+  --color-accent: oklch(0.58 0.16 255);
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+/* Don't animate scrolling for people who've asked for less motion. */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+}
+
+/* The sticky nav would otherwise cover the top of whatever you scroll to.
+   Fix it here, on the sections — not with JavaScript. */
+section[id] {
+  scroll-margin-top: 5rem;
+}
