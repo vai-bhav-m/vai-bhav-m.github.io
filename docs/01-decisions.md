@@ -164,5 +164,3 @@ arbitrary until you know what they are avoiding.
 - **No per-project routes.** Single page with anchors; the GitHub Pages deep-link 404
   problem never had to be solved.
 - **No analytics.**
-- **Contact form unconfigured.** `FORM_ID` is empty, so the section renders a setup
-  note rather than a broken form.

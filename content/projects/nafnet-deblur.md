@@ -1,6 +1,6 @@
 ---
 title: Self-Supervised Motion Deblurring with NAFNet
-summary: Masters thesis — a self-supervised architecture that reverses motion blur in footage of static scenes by extracting depth and imposing photometric losses, reaching a PSNR of 31.2.
+summary: "Masters thesis: a self-supervised architecture that reverses motion blur in footage of static scenes by extracting depth and imposing photometric losses, reaching a PSNR of 31.2."
 domain: Computer Vision
 tags: [research, computer-vision, deep-learning, pytorch]
 period: Aug 2023 – Jun 2024

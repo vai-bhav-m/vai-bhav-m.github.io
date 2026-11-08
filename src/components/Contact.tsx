@@ -1,10 +1,11 @@
 import { useState } from 'react'
 import { getAbout } from '../lib/content'
+import { MailIcon, socialIcon } from './Icons'
 
 /* -------------------------------------------------------------------------- */
 /*  Google Form configuration — fill these in, then the form below goes live.  */
 /*                                                                            */
-/*  1. Create a Google Form with three short-answer questions.                */
+/*  1. Create a Google Form with one question per FIELDS entry below.         */
 /*  2. Open the ⋮ menu → "Get pre-filled link", fill dummy values, Get link.   */
 /*  3. The link contains the two things you need:                             */
 /*       .../forms/d/e/<FORM_ID>/viewform?entry.123456=Dummy&entry.789012=... */
@@ -13,15 +14,22 @@ import { getAbout } from '../lib/content'
 /*  See docs/03-features-and-ui.md#the-form--google-forms-and-its-one-catch   */
 /* -------------------------------------------------------------------------- */
 
-const FORM_ID = ''
+const FORM_ID: string = '1FAIpQLScZt3bKIdW-Z3gGKUkXAwc7ceoQzXENRvwYAn9NMqITTAHnjQ'
 
 const FIELDS = {
-  name: 'entry.000000000',
-  email: 'entry.000000001',
-  message: 'entry.000000002',
+  name: 'entry.2005620554',
+  email: 'entry.1045781291',
+  phone: 'entry.132746793',
+  message: 'entry.1025592492',
 }
 
 type Status = 'idle' | 'sending' | 'sent' | 'error'
+
+/** Same outlined button as the About section's links, with room for an icon. */
+const BUTTON = `inline-flex items-center gap-2 rounded-lg border border-neutral-200 px-4
+  py-2.5 text-sm font-medium text-neutral-700 transition hover:bg-neutral-100
+  focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-500
+  dark:border-neutral-800 dark:text-neutral-300 dark:hover:bg-neutral-800`
 
 export default function Contact() {
   const about = getAbout()
@@ -42,6 +50,7 @@ export default function Contact() {
     const body = new FormData()
     body.append(FIELDS.name, String(data.get('name') ?? ''))
     body.append(FIELDS.email, String(data.get('email') ?? ''))
+    body.append(FIELDS.phone, String(data.get('phone') ?? ''))
     body.append(FIELDS.message, String(data.get('message') ?? ''))
 
     setStatus('sending')
@@ -79,28 +88,27 @@ export default function Contact() {
 
           <a
             href={`mailto:${about.email}`}
-            className="mt-3 inline-block font-medium text-sky-700 underline
-                       underline-offset-4 hover:text-sky-800 dark:text-sky-400
-                       dark:hover:text-sky-300"
+            className={`${BUTTON} mt-4 break-all`}
           >
+            <MailIcon className="size-4 shrink-0" />
             {about.email}
           </a>
 
-          <ul className="mt-6 space-y-2">
-            {about.socials.map((s) => (
-              <li key={s.url}>
-                <a
-                  href={s.url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-neutral-600 underline underline-offset-4
-                             hover:text-neutral-900 dark:text-neutral-400
-                             dark:hover:text-neutral-200"
-                >
-                  {s.label}
-                </a>
-              </li>
-            ))}
+          <p className="mt-8 text-sm font-medium text-neutral-900 dark:text-neutral-100">
+            Elsewhere
+          </p>
+          <ul className="mt-3 flex flex-wrap gap-3">
+            {about.socials.map((s) => {
+              const Icon = socialIcon(s.url)
+              return (
+                <li key={s.url}>
+                  <a href={s.url} target="_blank" rel="noopener noreferrer" className={BUTTON}>
+                    {Icon && <Icon className="size-4 shrink-0" />}
+                    {s.label}
+                  </a>
+                </li>
+              )
+            })}
           </ul>
         </div>
 
@@ -111,12 +119,13 @@ export default function Contact() {
             className="self-start rounded-lg border border-neutral-200 p-4 text-sm
                        text-neutral-600 dark:border-neutral-800 dark:text-neutral-400"
           >
-            Thanks — message sent. I&rsquo;ll be in touch.
+            Thanks! Message sent. I&rsquo;ll be in touch.
           </p>
         ) : (
           <form onSubmit={handleSubmit} className="space-y-4">
-            <Field name="name" label="Name" required />
-            <Field name="email" label="Email" type="email" required />
+            <Field name="name" label="Name" autoComplete="name" required />
+            <Field name="email" label="Email" type="email" autoComplete="email" required />
+            <Field name="phone" label="Phone" type="tel" autoComplete="tel" />
 
             <label className="block">
               <span className="text-sm font-medium text-neutral-700 dark:text-neutral-300">
@@ -155,7 +164,7 @@ export default function Contact() {
 
             {status === 'error' && (
               <p className="text-sm text-red-600 dark:text-red-400">
-                That didn&rsquo;t send — please email me directly at {about.email}.
+                That didn&rsquo;t send. Please email me directly at {about.email}.
               </p>
             )}
           </form>
@@ -169,11 +178,13 @@ function Field({
   name,
   label,
   type = 'text',
+  autoComplete,
   required,
 }: {
   name: string
   label: string
   type?: string
+  autoComplete?: string
   required?: boolean
 }) {
   return (
@@ -184,6 +195,7 @@ function Field({
       <input
         type={type}
         name={name}
+        autoComplete={autoComplete}
         required={required}
         className="mt-1.5 w-full rounded-lg border border-neutral-200 bg-transparent px-3
                    py-2 text-sm outline-none focus-visible:outline-2
@@ -204,7 +216,7 @@ function SetupNote() {
         Contact form not configured yet
       </p>
       <p className="mt-2">
-        Set <code>FORM_ID</code> and the three <code>entry.*</code> ids at the top of{' '}
+        Set <code>FORM_ID</code> and the <code>entry.*</code> ids at the top of{' '}
         <code>src/components/Contact.tsx</code> and the form appears here.
       </p>
     </div>

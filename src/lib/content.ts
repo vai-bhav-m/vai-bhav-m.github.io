@@ -269,7 +269,7 @@ export function getSearchItems(): SearchItem[] {
     ...getExperience().map((e) => ({
       id: `experience/${e.slug}`,
       kind: 'experience' as const,
-      title: `${e.role} — ${e.org}`,
+      title: `${e.role} · ${e.org}`,
       summary: e.summary,
       tags: e.tags,
       text: e.body,

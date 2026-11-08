@@ -1,6 +1,6 @@
 ---
 title: Low-Light Mosquito Recognition
-summary: Third place among 150+ participants — atmospheric haze modeling plus a YOLOv8 and Inception V3 ensemble for detecting mosquitoes in low-light images, at 61.3% mAP.
+summary: "Third place among 150+ participants: atmospheric haze modeling plus a YOLOv8 and Inception V3 ensemble for detecting mosquitoes in low-light images, at 61.3% mAP."
 domain: Computer Vision
 tags: [computer-vision, yolo, hackathon]
 period: Apr 2024

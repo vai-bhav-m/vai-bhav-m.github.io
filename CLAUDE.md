@@ -125,8 +125,6 @@ Actions log is a worse place to read the same error.
 
 ## Known incomplete
 
-- `FORM_ID` in `src/components/Contact.tsx` is `''` — Contact renders a setup note, not a
-  form. Needs a Google Form and three `entry.*` ids.
 - The `content/about.md` body is assistant-written placeholder prose. It should be
   rewritten in Vaibhav's voice; it is also what appears on the OG card.
 - No design pass: everything is functional Tailwind defaults.

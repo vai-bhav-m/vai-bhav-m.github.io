@@ -24,9 +24,6 @@ at a time.
 
 ## What is actually left
 
-- **Contact form is inert.** `FORM_ID` in `src/components/Contact.tsx` is an empty
-  string, so the section renders a setup note instead of a form. Needs a Google Form
-  plus its three `entry.*` field ids.
 - **About prose is placeholder.** `content/about.md` body was written by an assistant
   from the resume, not by Vaibhav. It should be rewritten in his own voice.
 - **Resume PDF is withheld.** It carries a phone number and `public/` is world-readable

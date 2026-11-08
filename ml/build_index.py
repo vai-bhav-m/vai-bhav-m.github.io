@@ -132,7 +132,7 @@ def collect() -> list[tuple[dict, str]]:
                 {
                     "id": f"experience/{slug}",
                     "kind": "experience",
-                    "title": f"{data['role']} — {data['org']}",
+                    "title": f"{data['role']} · {data['org']}",
                     "summary": data["summary"],
                     "tags": [str(t) for t in data.get("tags", [])],
                     "url": f"#{slug}",
