@@ -146,7 +146,7 @@ arbitrary until you know what they are avoiding.
 | Decision | Why | Evidence |
 | --- | --- | --- |
 | **Chunk per bullet, not per item** | One vector per body averages every claim away. Each bullet is a distinct assertion and deserves its own vector. | "heart and medical scans" 0.420 → 0.504; "kalman filter" 0.321 → 0.415 |
-| **Keyword-index the body too** | Rare literal terms living only in a body were invisible to *both* layers — embeddings diluted them, MiniSearch never saw them. | `docker`, `cozypose`, `kalman`, `graphrag` all went from zero results to correct hits |
+| **Keyword-index the body too** | Rare literal terms living only in a body were invisible to *both* layers — embeddings diluted them, MiniSearch never saw them. | `docker`, `cosypose`, `kalman`, `graphrag` all went from zero results to correct hits |
 | **Exclude About from search** | General-purpose bio prose matched everything weakly and crowded out real results. | scored 0.336 on "fluid dynamics", 0.317 on "kalman filter" |
 | **Score floor of 0.25** | Similarity search always returns *something*; without a floor you get confident garbage. | nonsense query peaked at 0.148, real matches cleared 0.26 |
 | **Self-host the model** | Removes the last third-party runtime dependency. The ONNX runtime was already bundled locally. | ~22.6 MB committed to `public/models/` |

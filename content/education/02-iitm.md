@@ -6,4 +6,4 @@ grade: CGPA 8.75/10
 location: Chennai, India
 ---
 
-- All India Rank **3278** in JEE Advanced 2019.
+- **99.73 percentile** among engineering aspirants nationwide in JEE 2019 (All India Rank 3278 in JEE Advanced).

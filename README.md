@@ -14,7 +14,7 @@ search server would have done either happens once ahead of time or runs on the v
 machine, so the server has nothing left to do.
 
 Search runs as two layers that fail in opposite directions. Keyword matching via MiniSearch is
-instant and catches exact rare terms like `cozypose` or `tensorrt`; semantic matching catches
+instant and catches exact rare terms like `cosypose` or `tensorrt`; semantic matching catches
 meaning, so "heart and medical scans" finds a cardiac segmentation project that shares no words
 with the query. Keyword results render on the keystroke and semantic results merge in once the
 model has loaded, which means search is never blank or broken while that happens — and if the

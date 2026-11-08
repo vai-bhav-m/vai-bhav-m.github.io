@@ -88,7 +88,8 @@ function Entry({ entry }: { entry: ExperienceEntry }) {
         <p className="mt-0.5 text-sm text-neutral-600 dark:text-neutral-400">{entry.location}</p>
       )}
 
-      <p className="mt-3 text-neutral-600 dark:text-neutral-400">{entry.summary}</p>
+      {/* `summary` is deliberately not shown: it restated the bullets below it.
+          It still feeds search (keyword + embeddings), where it does real work. */}
 
       {entry.body && (
         <div className="mt-3 text-sm">

@@ -83,17 +83,12 @@ export default function Contact() {
         Contact
       </h2>
 
-      {/* A short note first, signed off, then the form, then direct links. */}
+      {/* A short note first, then the form, then direct links. */}
       <div className="mt-4 max-w-2xl text-neutral-600 dark:text-neutral-400">
         <p>
           Hey, thanks for stopping by! From perception to learned control, I&rsquo;m always
           up for a chat about what&rsquo;s new in robotics. Happy to talk over coffee or a
           call.
-        </p>
-        <p className="mt-3">
-          Cheers,
-          <br />
-          Vaibhav
         </p>
       </div>
 

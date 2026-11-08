@@ -6,6 +6,7 @@ end: "2023-08"
 location: Vancouver, BC, Canada
 summary: MITACS Globalink fellowship modeling inter-atomic potentials of Si and TiO2 in Julia with Atomic Cluster Expansion, plus a novel hierarchical multilevel learning approach.
 tags: [research, scientific-ml, julia, bayesian]
+archived: true
 ---
 
 Awarded a fully-funded **USD 7,500 MITACS Globalink Research Fellowship** to work with

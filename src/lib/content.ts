@@ -91,7 +91,7 @@ export type SearchItem = {
    * Full body text, keyword-indexed but never displayed.
    *
    * Without it, rare literal terms that only appear in a body — "Dockerized",
-   * "AWS EC2", "CozyPose", "RRT-connect" — are findable by neither layer:
+   * "AWS EC2", "CosyPose", "RRT-connect" — are findable by neither layer:
    * embeddings dilute them across the whole bullet, and keyword search never
    * saw them.
    */

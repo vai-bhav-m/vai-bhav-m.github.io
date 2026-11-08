@@ -6,6 +6,7 @@ end: "2022-08"
 location: Aachen, Germany
 summary: Modeled turbulent fluid flows with super-resolution GANs and physics-informed constraints, reaching 92% accuracy predicting functional relations from filtered DNS data.
 tags: [research, gan, scientific-ml, pinns]
+archived: true
 ---
 
 Worked with **Prof. Heinz Pitsch** at the Institute for Combustion Technology.

@@ -116,7 +116,7 @@ across the bullet, and MiniSearch had never seen them. Measured before and after
 
 ```
 docker     (no results) → Scout Robotics
-cozypose   (no results) → ABB Robotics
+cosypose   (no results) → ABB Robotics
 kalman     (no results) → UR5 Calibration
 graphrag   (no results) → ABB Robotics
 ```

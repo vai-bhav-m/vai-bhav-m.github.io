@@ -1,6 +1,6 @@
 ---
 name: Vaibhav Mahapatra
-tagline: Perception and autonomy stack engineer.
+tagline: Building robots that see, reason and act in real time.
 location: Santa Clara, California
 # Areas shown on the link-preview image (public/og.png). Run `npm run build:og` after editing.
 focus: [Robotics, Computer Vision, ML Systems, Controls]
@@ -15,22 +15,25 @@ socials:
     url: https://github.com/vai-bhav-m
 ---
 
-Hey, I'm Vaibhav! I'm a computer vision research engineer at **ABB Robotics** in San
-Jose, where I work on random bin picking with 6D pose estimation, and on a
-vision-language-action (VLA) policy for logistics pick-and-place on a dual-arm robot.
+Hey, I'm Vaibhav, a computer vision research engineer at **ABB Robotics** in San Jose.
+Day to day, that means random bin picking with 6D pose estimation. It also means
+finetuning a vision-language-action (VLA) policy for logistics pick-and-place on a
+dual-arm robot.
 
-What pulls me into robotics is the elegant engineering behind many systems working
-together. Sensing, perception, planning and control all have to line up to get a real,
-physical result in real time, and I find that fascinating. My background in robotics
-from **Johns Hopkins** and machine learning from **IIT Madras** is what drew me to 3D
-perception, and especially to getting a robot to reason through what it sees.
+I started out in machine learning at **IIT Madras**, working on deep learning and
+computer vision. My robotics degree at **Johns Hopkins** then taught me to apply those
+perception principles to whole robotic systems, including planning and control. That's
+what pulled me into robotics: the elegant engineering of many interacting systems.
+Sensing, perception, planning and control all have to line up to deliver a real,
+physical result in real time.
 
-The work I'm proudest of is the Lidar-camera sensor fusion I built for rail autonomy at
-Scout Robotics, and a hybrid controller for a hopping robot that learns the contact
-forces a physics model misses.
+The problems I enjoy most are in 3D perception, especially getting a robot to reason
+through what it sees. My proudest work is the LiDAR-camera sensor fusion I built for
+rail autonomy at Scout Robotics. Close behind is a hybrid controller for a hopping robot that
+learns the contact forces a physics model misses.
 
 I'm looking to lead perception and autonomy initiatives, so if you're building an
 interesting product or service, hit me up!
 
 Off the clock, I'm a big cinephile with a soft spot for crime thrillers and murder
-mysteries, whether they come from Hollywood, Bollywood or anime.
+mysteries, whether they come from Hollywood, Bollywood or Anime.
