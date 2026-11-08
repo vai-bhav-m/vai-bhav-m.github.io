@@ -6,10 +6,13 @@
 
 type IconProps = { className?: string }
 
-function Svg({ className = 'size-4', d }: IconProps & { d: string }) {
+/** Multi-path icons pass an array: overlapping paths merged into one could cancel out. */
+function Svg({ className = 'size-4', d }: IconProps & { d: string | string[] }) {
   return (
     <svg viewBox="0 0 16 16" fill="currentColor" aria-hidden className={className}>
-      <path d={d} />
+      {(Array.isArray(d) ? d : [d]).map((path) => (
+        <path key={path} d={path} />
+      ))}
     </svg>
   )
 }
@@ -39,6 +42,64 @@ export function MailIcon(props: IconProps) {
       d="M0 4a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2zm2-1a1 1 0 0 0-1 1v.217l7 4.2 7-4.2V4a1 1 0 0 0-1-1zm13 2.383-4.708 2.825L15 11.105zm-.034 6.876-5.64-3.471L8 9.583l-1.326-.795-5.64 3.47A1 1 0 0 0 2 13h12a1 1 0 0 0 .966-.741M1 11.105l4.708-2.897L1 5.383z"
     />
   )
+}
+
+export function PinIcon(props: IconProps) {
+  return (
+    <Svg
+      {...props}
+      d="M12.166 8.94c-.524 1.062-1.234 2.12-1.96 3.07A32 32 0 0 1 8 14.58a32 32 0 0 1-2.206-2.57c-.726-.95-1.436-2.008-1.96-3.07C3.304 7.867 3 6.862 3 6a5 5 0 0 1 10 0c0 .862-.305 1.867-.834 2.94M8 16s6-5.686 6-10A6 6 0 0 0 2 6c0 4.314 6 10 6 10M8 8a2 2 0 1 1 0-4 2 2 0 0 1 0 4m0 1a3 3 0 1 0 0-6 3 3 0 0 0 0 6"
+    />
+  )
+}
+
+export function DocumentIcon(props: IconProps) {
+  return (
+    <Svg
+      {...props}
+      d={[
+        'M5.5 7a.5.5 0 0 0 0 1h5a.5.5 0 0 0 0-1zM5 9.5a.5.5 0 0 1 .5-.5h5a.5.5 0 0 1 0 1h-5a.5.5 0 0 1-.5-.5m0 2a.5.5 0 0 1 .5-.5h2a.5.5 0 0 1 0 1h-2a.5.5 0 0 1-.5-.5',
+        'M9.5 0H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V4.5zm0 1v2A1.5 1.5 0 0 0 11 4.5h2V14a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1z',
+      ]}
+    />
+  )
+}
+
+export function SlidesIcon(props: IconProps) {
+  return (
+    <Svg
+      {...props}
+      d={[
+        'M5 6a.5.5 0 0 0-.496.438l-.5 4A.5.5 0 0 0 4.5 11h3v2.016c-.863.055-1.5.251-1.5.484 0 .276.895.5 2 .5s2-.224 2-.5c0-.233-.637-.429-1.5-.484V11h3a.5.5 0 0 0 .496-.562l-.5-4A.5.5 0 0 0 11 6zm2 3.78V7.22c0-.096.106-.156.19-.106l2.13 1.279a.125.125 0 0 1 0 .214l-2.13 1.28A.125.125 0 0 1 7 9.778z',
+        'M14 14V4.5L9.5 0H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2M9.5 3A1.5 1.5 0 0 0 11 4.5h2V14a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1h5.5z',
+      ]}
+    />
+  )
+}
+
+export function ExternalIcon(props: IconProps) {
+  return (
+    <Svg
+      {...props}
+      d={[
+        'M8.636 3.5a.5.5 0 0 0-.5-.5H1.5A1.5 1.5 0 0 0 0 4.5v10A1.5 1.5 0 0 0 1.5 16h10a1.5 1.5 0 0 0 1.5-1.5V7.864a.5.5 0 0 0-1 0V14.5a.5.5 0 0 1-.5.5h-10a.5.5 0 0 1-.5-.5v-10a.5.5 0 0 1 .5-.5h6.636a.5.5 0 0 0 .5-.5',
+        'M16 .5a.5.5 0 0 0-.5-.5h-5a.5.5 0 0 0 0 1h3.793L6.146 9.146a.5.5 0 1 0 .708.708L15 1.707V5.5a.5.5 0 0 0 1 0z',
+      ]}
+    />
+  )
+}
+
+/**
+ * Icon for a project link, from its label first (the author's intent), then its
+ * URL. "Slides" on a Canva link and "Report" on a PDF both resolve correctly.
+ */
+export function linkIcon(label: string, url: string) {
+  const l = label.toLowerCase()
+  if (/slide|deck|presentation|poster/.test(l) || /\.pptx?$|docs\.google\.com\/presentation/i.test(url))
+    return SlidesIcon
+  if (/report|paper|thesis|pdf|writeup|write-up/.test(l) || /\.pdf$/i.test(url)) return DocumentIcon
+  if (/code|source|repo|github/.test(l) || /github\.com/i.test(url)) return GitHubIcon
+  return ExternalIcon
 }
 
 /** Picks a brand icon from a profile URL's host; undefined for anything else. */

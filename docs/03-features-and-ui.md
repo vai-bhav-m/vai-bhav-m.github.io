@@ -195,8 +195,11 @@ tags: [python, ml, react] # display + search only
 period: 2026
 order: 1
 archived: false           # optional; hides behind "Show N earlier"
-repo: https://github.com/you/repo
-demo: https://...
+links:                    # optional; buttons under the card, icon picked from the label
+  - label: Report         # "Report"/"Paper" -> document, "Slides"/"Deck" -> slides,
+    url: /files/report.pdf  # "Code" -> GitHub, anything else -> external link.
+  - label: Slides         # url must start with https:// or / (a file in public/)
+    url: https://canva.link/...
 ---
 ```
 

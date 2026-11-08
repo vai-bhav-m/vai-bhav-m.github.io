@@ -75,7 +75,12 @@ def read_domains() -> list[str]:
 
 def main() -> None:
     about = read_about()
-    domains = read_domains()
+    # `focus:` in about.md overrides the derived list, for areas that are not a
+    # project domain (Controls) or to drop ones that are (Medical Imaging).
+    focus = about.get("focus")
+    if focus is not None and not (isinstance(focus, list) and all(isinstance(f, str) for f in focus)):
+        raise SystemExit("content/about.md: focus must be a list of strings")
+    domains = focus if focus else read_domains()
 
     image = Image.new("RGB", (WIDTH, HEIGHT), BG)
     draw = ImageDraw.Draw(image)

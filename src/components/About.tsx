@@ -1,5 +1,6 @@
 import portrait from '../assets/portrait.webp'
 import { getAbout } from '../lib/content'
+import { socialIcon } from './Icons'
 import Prose from './Prose'
 
 export default function About() {
@@ -30,10 +31,6 @@ export default function About() {
           {about.tagline}
         </p>
 
-        {about.location && (
-          <p className="mt-2 text-sm text-neutral-500 dark:text-neutral-400">{about.location}</p>
-        )}
-
         <div className="mt-6 max-w-2xl">
           <Prose>{about.body}</Prose>
         </div>
@@ -52,21 +49,25 @@ export default function About() {
             </a>
           )}
 
-          {about.socials.map((s) => (
-            <a
-              key={s.url}
-              href={s.url}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="rounded-lg border border-neutral-200 px-4 py-2.5 text-sm font-medium
-                         text-neutral-700 transition hover:bg-neutral-100
-                         focus-visible:outline-2 focus-visible:outline-offset-2
-                         focus-visible:outline-sky-500 dark:border-neutral-800
-                         dark:text-neutral-300 dark:hover:bg-neutral-800"
-            >
-              {s.label}
-            </a>
-          ))}
+          {about.socials.map((s) => {
+            const Icon = socialIcon(s.url)
+            return (
+              <a
+                key={s.url}
+                href={s.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-2 rounded-lg border border-neutral-200 px-4
+                           py-2.5 text-sm font-medium text-neutral-700 transition
+                           hover:bg-neutral-100 focus-visible:outline-2
+                           focus-visible:outline-offset-2 focus-visible:outline-sky-500
+                           dark:border-neutral-800 dark:text-neutral-300 dark:hover:bg-neutral-800"
+              >
+                {Icon && <Icon className="size-4 shrink-0" />}
+                {s.label}
+              </a>
+            )
+          })}
         </div>
       </div>
     </section>

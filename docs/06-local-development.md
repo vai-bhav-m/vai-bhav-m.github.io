@@ -135,10 +135,10 @@ In `package.json`:
 {
   "scripts": {
     "dev": "vite",
-    "build": "tsc --noEmit && vite build",
+    "build": "tsc --noEmit && node scripts/check-content.mjs && vite build",
     "preview": "vite preview",
     "build:index": "python ml/build_index.py",   // Phase 4
-    "check": "tsc --noEmit"                      // types only, fast
+    "check": "tsc --noEmit && node scripts/check-content.mjs"  // types + content
   }
 }
 ```
@@ -148,7 +148,7 @@ seconds without waiting for a full build.
 
 ## Before you push
 
-1. `npm run check` — no type errors.
+1. `npm run check` — no type errors, and every content file parses (a bad one names itself).
 2. `npm run build` — build succeeds. **A failing build here means a failing deploy**,
    and the Actions log is a far worse place to read the same error.
 3. `npm run preview` — click through every section, use the search, toggle the theme,

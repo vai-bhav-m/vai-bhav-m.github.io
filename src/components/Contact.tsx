@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { getAbout } from '../lib/content'
-import { MailIcon, socialIcon } from './Icons'
+import { MailIcon, PinIcon, socialIcon } from './Icons'
 
 /* -------------------------------------------------------------------------- */
 /*  Google Form configuration — fill these in, then the form below goes live.  */
@@ -24,6 +24,9 @@ const FIELDS = {
 }
 
 type Status = 'idle' | 'sending' | 'sent' | 'error'
+
+/** A step above the form's field labels, so it reads as a heading, not a field. */
+const COLUMN_HEADING = 'font-semibold text-neutral-900 dark:text-neutral-100'
 
 /** Same outlined button as the About section's links, with room for an icon. */
 const BUTTON = `inline-flex items-center gap-2 rounded-lg border border-neutral-200 px-4
@@ -80,23 +83,90 @@ export default function Contact() {
         Contact
       </h2>
 
-      <div className="mt-8 grid gap-10 md:grid-cols-2">
-        <div>
-          <p className="text-neutral-600 dark:text-neutral-400">
-            The quickest way to reach me is email.
-          </p>
+      {/* A short note first, signed off, then the form, then direct links. */}
+      <div className="mt-4 max-w-2xl text-neutral-600 dark:text-neutral-400">
+        <p>
+          Hey, thanks for stopping by! From perception to learned control, I&rsquo;m always
+          up for a chat about what&rsquo;s new in robotics. Happy to talk over coffee or a
+          call.
+        </p>
+        <p className="mt-3">
+          Cheers,
+          <br />
+          Vaibhav
+        </p>
+      </div>
 
-          <a
-            href={`mailto:${about.email}`}
-            className={`${BUTTON} mt-4 break-all`}
-          >
+      <div className="mt-10 grid gap-10 md:grid-cols-2">
+        <div>
+          <h3 className={`${COLUMN_HEADING} mb-3`}>Send me a message</h3>
+          {FORM_ID === '' ? (
+            <SetupNote />
+          ) : status === 'sent' ? (
+            <p
+              className="self-start rounded-lg border border-neutral-200 p-4 text-sm
+                         text-neutral-600 dark:border-neutral-800 dark:text-neutral-400"
+            >
+              Thanks! Message sent. I&rsquo;ll be in touch.
+            </p>
+          ) : (
+            <form onSubmit={handleSubmit} className="space-y-4">
+              <Field name="name" label="Name" autoComplete="name" required />
+              <Field name="email" label="Email" type="email" autoComplete="email" required />
+              <Field name="phone" label="Phone" type="tel" autoComplete="tel" />
+
+              <label className="block">
+                <span className="text-sm font-medium text-neutral-700 dark:text-neutral-300">
+                  Message
+                </span>
+                <textarea
+                  name="message"
+                  rows={4}
+                  required
+                  className="mt-1.5 w-full rounded-lg border border-neutral-200 bg-transparent
+                             px-3 py-2 text-sm outline-none focus-visible:outline-2
+                             focus-visible:outline-offset-2 focus-visible:outline-sky-500
+                             dark:border-neutral-800"
+                />
+              </label>
+
+              {/* Honeypot — hidden from people, irresistible to bots. */}
+              <input
+                type="text"
+                name="website"
+                tabIndex={-1}
+                autoComplete="off"
+                aria-hidden
+                className="absolute left-[-9999px]"
+              />
+
+              <button
+                type="submit"
+                disabled={status === 'sending'}
+                className="rounded-lg bg-neutral-900 px-4 py-2.5 text-sm font-medium text-white
+                           transition hover:bg-neutral-700 disabled:opacity-50
+                           dark:bg-neutral-100 dark:text-neutral-900 dark:hover:bg-neutral-300"
+              >
+                {status === 'sending' ? 'Sending…' : 'Send'}
+              </button>
+
+              {status === 'error' && (
+                <p className="text-sm text-red-600 dark:text-red-400">
+                  That didn&rsquo;t send. Please email me directly at {about.email}.
+                </p>
+              )}
+            </form>
+          )}
+        </div>
+
+        <div>
+          <h3 className={COLUMN_HEADING}>Or reach me directly</h3>
+
+          <a href={`mailto:${about.email}`} className={`${BUTTON} mt-3 break-all`}>
             <MailIcon className="size-4 shrink-0" />
             {about.email}
           </a>
 
-          <p className="mt-8 text-sm font-medium text-neutral-900 dark:text-neutral-100">
-            Elsewhere
-          </p>
           <ul className="mt-3 flex flex-wrap gap-3">
             {about.socials.map((s) => {
               const Icon = socialIcon(s.url)
@@ -110,65 +180,14 @@ export default function Contact() {
               )
             })}
           </ul>
+
+          {about.location && (
+            <p className="mt-5 flex items-center gap-2 text-sm text-neutral-600 dark:text-neutral-400">
+              <PinIcon className="size-4 shrink-0" />
+              Based in {about.location}
+            </p>
+          )}
         </div>
-
-        {FORM_ID === '' ? (
-          <SetupNote />
-        ) : status === 'sent' ? (
-          <p
-            className="self-start rounded-lg border border-neutral-200 p-4 text-sm
-                       text-neutral-600 dark:border-neutral-800 dark:text-neutral-400"
-          >
-            Thanks! Message sent. I&rsquo;ll be in touch.
-          </p>
-        ) : (
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <Field name="name" label="Name" autoComplete="name" required />
-            <Field name="email" label="Email" type="email" autoComplete="email" required />
-            <Field name="phone" label="Phone" type="tel" autoComplete="tel" />
-
-            <label className="block">
-              <span className="text-sm font-medium text-neutral-700 dark:text-neutral-300">
-                Message
-              </span>
-              <textarea
-                name="message"
-                rows={4}
-                required
-                className="mt-1.5 w-full rounded-lg border border-neutral-200 bg-transparent
-                           px-3 py-2 text-sm outline-none focus-visible:outline-2
-                           focus-visible:outline-offset-2 focus-visible:outline-sky-500
-                           dark:border-neutral-800"
-              />
-            </label>
-
-            {/* Honeypot — hidden from people, irresistible to bots. */}
-            <input
-              type="text"
-              name="website"
-              tabIndex={-1}
-              autoComplete="off"
-              aria-hidden
-              className="absolute left-[-9999px]"
-            />
-
-            <button
-              type="submit"
-              disabled={status === 'sending'}
-              className="rounded-lg bg-neutral-900 px-4 py-2.5 text-sm font-medium text-white
-                         transition hover:bg-neutral-700 disabled:opacity-50
-                         dark:bg-neutral-100 dark:text-neutral-900 dark:hover:bg-neutral-300"
-            >
-              {status === 'sending' ? 'Sending…' : 'Send'}
-            </button>
-
-            {status === 'error' && (
-              <p className="text-sm text-red-600 dark:text-red-400">
-                That didn&rsquo;t send. Please email me directly at {about.email}.
-              </p>
-            )}
-          </form>
-        )}
       </div>
     </section>
   )

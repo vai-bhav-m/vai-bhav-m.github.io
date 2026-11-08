@@ -15,7 +15,7 @@ were rewritten after implementation.
 npm run dev -- --host   # dev server + a LAN URL for phone testing
 npm run build           # tsc --noEmit && vite build
 npm run preview         # serves dist/ — what Pages will actually serve
-npm run check           # types only, fast
+npm run check           # types + content check, fast
 
 npm run build:index     # regenerate search vectors  (needs .venv)
 npm run build:og        # regenerate public/og.png    (needs .venv)
@@ -65,8 +65,14 @@ Do not "fix" these without reading the linked rationale.
 ## Content
 
 Markdown + YAML frontmatter under `content/` — `about.md`, `projects/*.md`,
-`experience/*.md`. React renders from these files and the indexer reads the same ones,
-so search cannot drift from the page.
+`experience/*.md`, `education/*.md`. React renders from these files and the indexer reads
+the same ones, so search cannot drift from the page. Education, like About, is not
+searchable (in `content.ts` and `build_index.py` alike).
+
+A frontmatter value containing `: ` must be quoted, or the YAML is invalid. Content is
+parsed in the visitor's browser, so a bad file used to pass the build and ship a **blank
+page**. `scripts/check-content.mjs` now runs the same loaders inside `npm run build` (and
+`npm run check`), failing with the file's name. Do not remove it from the build script.
 
 **All content access goes through `src/lib/content.ts`.** It is the single seam where
 "where content comes from" is decided. Components must not import Markdown directly.
@@ -125,8 +131,6 @@ Actions log is a worse place to read the same error.
 
 ## Known incomplete
 
-- The `content/about.md` body is assistant-written placeholder prose. It should be
-  rewritten in Vaibhav's voice; it is also what appears on the OG card.
 - No design pass: everything is functional Tailwind defaults.
 
 Deliberately not built: service worker / offline, per-project routes, analytics, any

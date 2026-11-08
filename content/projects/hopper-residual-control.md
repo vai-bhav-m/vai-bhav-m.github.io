@@ -6,6 +6,9 @@ tags: [robotics, control, reinforcement-learning, mppi]
 period: May 2025
 order: 2
 featured: true
+links:
+  - label: Report
+    url: /files/hopper-report.pdf
 ---
 
 Under **Prof. Joseph L. Moore**, Johns Hopkins University.

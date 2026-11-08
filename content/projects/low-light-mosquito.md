@@ -5,6 +5,9 @@ domain: Computer Vision
 tags: [computer-vision, yolo, hackathon]
 period: Apr 2024
 order: 7
+links:
+  - label: Slides
+    url: https://canva.link/yq6aov1bpj3ekwl
 ---
 
 Hackathon under **Prof. Kaushik Mitra**, IIT Madras. **Won 3rd place** among 150+

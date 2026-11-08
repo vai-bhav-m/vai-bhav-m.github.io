@@ -65,11 +65,13 @@ Expensive, rare, and private goes left. Cheap, frequent, and public goes right.
 │   ├── projects/
 │   │   ├── project-one.md
 │   │   └── project-two.md
+│   ├── experience/
+│   └── education/               # degrees, grades; not searchable
 ├── docs/                        # these planning docs
 ├── ml/                          # build-time Python, never runs in CI
 │   ├── build_index.py           # reads content/, writes src/data/search-index.json
 │   ├── chunking.py              # splits bodies into embeddable pieces
-│   ├── build_og_image.py        # generates public/og.png from about.md
+│   ├── build_og_image.py        # public/og.png from about.md (name, tagline, focus:, location)
 │   └── requirements.txt
 ├── public/                      # copied to the site root verbatim
 │   ├── models/Xenova/all-MiniLM-L6-v2/   # self-hosted weights (~22.6 MB)
@@ -77,6 +79,8 @@ Expensive, rare, and private goes left. Cheap, frequent, and public goes right.
 │   ├── robots.txt               # deliberately allows every crawler
 │   ├── sitemap.xml
 │   └── favicon.svg
+├── scripts/
+│   └── check-content.mjs        # runs the content loaders at build time; bad file = failed build
 ├── src/
 │   ├── main.tsx                 # entry point
 │   ├── App.tsx                  # page composition
@@ -90,6 +94,7 @@ Expensive, rare, and private goes left. Cheap, frequent, and public goes right.
 │   │   ├── ProjectFilter.tsx    # DOMAIN chips, not tags
 │   │   ├── ShowMore.tsx         # archived-item disclosure
 │   │   ├── Experience.tsx
+│   │   ├── Education.tsx
 │   │   ├── Prose.tsx            # markdown renderer
 │   │   └── Contact.tsx          # links + Google Form
 │   ├── data/

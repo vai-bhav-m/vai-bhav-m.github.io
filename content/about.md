@@ -1,7 +1,9 @@
 ---
 name: Vaibhav Mahapatra
-tagline: "Robotics perception R&D: 6D pose estimation, learned control, and the gap between a good benchmark and a working robot."
+tagline: Perception and autonomy stack engineer.
 location: Santa Clara, California
+# Areas shown on the link-preview image (public/og.png). Run `npm run build:og` after editing.
+focus: [Robotics, Computer Vision, ML Systems, Controls]
 email: vaibhav.mahapatra2001@gmail.com
 # Uncomment once a publishable resume (phone number removed) is in public/.
 # The Download button hides itself while this is unset.
@@ -13,17 +15,22 @@ socials:
     url: https://github.com/vai-bhav-m
 ---
 
-I work on the perception and control end of robotics, currently at **ABB Robotics**
-in San Jose, productionizing random bin picking with 6D pose estimation and finetuning
-vision-language-action policies for dexterous manipulation.
+Hey, I'm Vaibhav! I'm a computer vision research engineer at **ABB Robotics** in San
+Jose, where I work on random bin picking with 6D pose estimation, and on a
+vision-language-action (VLA) policy for logistics pick-and-place on a dual-arm robot.
 
-Before that: semantic segmentation and sensor fusion for rail autonomy at Scout
-Robotics, and LLM-powered code generation tooling at MathWorks.
+What pulls me into robotics is the elegant engineering behind many systems working
+together. Sensing, perception, planning and control all have to line up to get a real,
+physical result in real time, and I find that fascinating. My background in robotics
+from **Johns Hopkins** and machine learning from **IIT Madras** is what drew me to 3D
+perception, and especially to getting a robot to reason through what it sees.
 
-**MS Robotics at Johns Hopkins** (4.0/4.0, May 2026), after a dual
-**M.Tech Data Science + B.Tech Mechanical Engineering at IIT Madras** (8.75/10). Along
-the way: a MITACS Globalink fellowship at UBC, a summer at RWTH Aachen on turbulence
-modeling, and an All India Rank of 3278 in JEE Advanced 2019.
+The work I'm proudest of is the Lidar-camera sensor fusion I built for rail autonomy at
+Scout Robotics, and a hybrid controller for a hopping robot that learns the contact
+forces a physics model misses.
 
-Most of what I build sits where learned models meet real hardware, which is mostly a
-story about the gap between a good benchmark number and a robot that actually works.
+I'm looking to lead perception and autonomy initiatives, so if you're building an
+interesting product or service, hit me up!
+
+Off the clock, I'm a big cinephile with a soft spot for crime thrillers and murder
+mysteries, whether they come from Hollywood, Bollywood or anime.

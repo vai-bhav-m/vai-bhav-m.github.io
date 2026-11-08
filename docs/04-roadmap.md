@@ -24,8 +24,6 @@ at a time.
 
 ## What is actually left
 
-- **About prose is placeholder.** `content/about.md` body was written by an assistant
-  from the resume, not by Vaibhav. It should be rewritten in his own voice.
 - **Resume PDF is withheld.** It carries a phone number and `public/` is world-readable
   and search-indexed, so it is gitignored at the repo root. The Download button hides
   itself while `resume:` is commented out in `about.md`.
@@ -94,8 +92,11 @@ title: Semantic Search Portfolio
 slug: semantic-search
 summary: One sentence a recruiter reads in three seconds.
 tags: [python, ml, react]
-repo: https://github.com/you/repo
-demo: https://...
+links:                    # optional; buttons under the card, icon picked from the label
+  - label: Report         # "Report"/"Paper" -> document, "Slides"/"Deck" -> slides,
+    url: /files/report.pdf  # "Code" -> GitHub, anything else -> external link.
+  - label: Slides         # url must start with https:// or / (a file in public/)
+    url: https://canva.link/...
 ---
 
 Longer description in Markdown.

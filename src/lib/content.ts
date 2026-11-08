@@ -39,8 +39,8 @@ export type Project = {
    */
   domain: string
   tags: string[]
-  repo?: string
-  demo?: string
+  /** Reports, slides, code, demos: anything with more detail. Shown as buttons. */
+  links: ProjectLink[]
   period?: string
   featured: boolean
   /** Kept out of the default view, but still indexed and searchable. */
@@ -48,6 +48,8 @@ export type Project = {
   order: number
   body: string
 }
+
+export type ProjectLink = { label: string; url: string }
 
 export type ExperienceEntry = {
   slug: string
@@ -60,6 +62,17 @@ export type ExperienceEntry = {
   tags: string[]
   /** Kept out of the default view, but still indexed and searchable. */
   archived: boolean
+  body: string
+}
+
+export type EducationEntry = {
+  slug: string
+  school: string
+  degree: string
+  /** Graduation, as display text ("May 2026", "2024"). */
+  end: string
+  grade?: string
+  location?: string
   body: string
 }
 
@@ -100,7 +113,16 @@ function parse(raw: string, path: string): Parsed {
     )
   }
 
-  const data = parseYaml(match[1])
+  let data: unknown
+  try {
+    data = parseYaml(match[1])
+  } catch (error) {
+    // js-yaml appends a multi-line code excerpt; the first line is the useful part.
+    const reason = error instanceof Error ? error.message.split('\n')[0] : String(error)
+    throw new Error(
+      `${path}: frontmatter is not valid YAML (${reason}). A value containing ": " must be quoted.`,
+    )
+  }
   if (typeof data !== 'object' || data === null) {
     throw new Error(`${path}: frontmatter did not parse to an object.`)
   }
@@ -124,6 +146,27 @@ function str(data: Record<string, unknown>, key: string, path: string): string {
 function optStr(data: Record<string, unknown>, key: string): string | undefined {
   const v = data[key]
   return typeof v === 'string' && v.trim() !== '' ? v.trim() : undefined
+}
+
+/**
+ * `links:` is optional, but a malformed entry throws, naming the file, rather than
+ * rendering a dead button. URLs must be absolute (https://) or a site path
+ * (/files/report.pdf, served from public/). Caught at build time by
+ * scripts/check-content.mjs, which runs these loaders before `vite build`.
+ */
+function linksOf(data: Record<string, unknown>, path: string): ProjectLink[] {
+  const v = data.links
+  if (v === undefined) return []
+  if (!Array.isArray(v)) throw new Error(`${path}: "links" must be a list of { label, url }.`)
+  return v.map((item, i) => {
+    const { label, url } = (item ?? {}) as Record<string, unknown>
+    if (typeof label !== 'string' || typeof url !== 'string' || !/^(https?:\/\/|\/)/.test(url)) {
+      throw new Error(
+        `${path}: links[${i}] needs a "label" and a "url" starting with https:// or /.`,
+      )
+    }
+    return { label: label.trim(), url: url.trim() }
+  })
 }
 
 function strList(data: Record<string, unknown>, key: string): string[] {
@@ -182,8 +225,7 @@ export function getProjects(): Project[] {
         summary: str(data, 'summary', path),
         domain: str(data, 'domain', path),
         tags: strList(data, 'tags'),
-        repo: optStr(data, 'repo'),
-        demo: optStr(data, 'demo'),
+        links: linksOf(data, path),
         period: optStr(data, 'period'),
         featured: data.featured === true,
         archived: data.archived === true,
@@ -243,6 +285,36 @@ export function getExperience(): ExperienceEntry[] {
       }
     })
     .sort((a, b) => b.start.localeCompare(a.start)) // most recent first
+}
+
+/* -------------------------------------------------------------- education -- */
+
+const educationFiles = import.meta.glob('../../content/education/*.md', {
+  query: '?raw',
+  import: 'default',
+  eager: true,
+}) as Record<string, string>
+
+/**
+ * Ordered by filename (01-, 02-, ...), most recent first. Not searchable, like
+ * About: grades and ranks are credentials to read, not things anyone searches for,
+ * and the indexer in ml/build_index.py does not read this folder either.
+ */
+export function getEducation(): EducationEntry[] {
+  return Object.entries(educationFiles)
+    .sort(([a], [b]) => a.localeCompare(b))
+    .map(([path, raw]) => {
+      const { data, body } = parse(raw, path)
+      return {
+        slug: optStr(data, 'slug') ?? slugOf(path),
+        school: str(data, 'school', path),
+        degree: str(data, 'degree', path),
+        end: String(data.end ?? ''),
+        grade: optStr(data, 'grade'),
+        location: optStr(data, 'location'),
+        body,
+      }
+    })
 }
 
 /* ----------------------------------------------------------------- search -- */

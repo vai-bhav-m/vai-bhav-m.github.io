@@ -1,4 +1,5 @@
 import type { Project } from '../lib/content'
+import { linkIcon } from './Icons'
 import Prose from './Prose'
 
 export default function ProjectCard({ project }: { project: Project }) {
@@ -40,29 +41,29 @@ export default function ProjectCard({ project }: { project: Project }) {
         </div>
       )}
 
-      {(project.repo || project.demo) && (
-        <div className="mt-5 flex flex-wrap gap-4 text-sm font-medium">
-          {project.repo && (
-            <a
-              href={project.repo}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-sky-700 hover:text-sky-800 dark:text-sky-400 dark:hover:text-sky-300"
-            >
-              Source →
-            </a>
-          )}
-          {project.demo && (
-            <a
-              href={project.demo}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-sky-600 hover:text-sky-500 dark:text-sky-400"
-            >
-              Live demo →
-            </a>
-          )}
-        </div>
+      {project.links.length > 0 && (
+        <ul className="mt-5 flex flex-wrap gap-2">
+          {project.links.map((link) => {
+            const Icon = linkIcon(link.label, link.url)
+            return (
+              <li key={link.url}>
+                <a
+                  href={link.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-1.5 rounded-lg border border-neutral-200
+                             px-3 py-1.5 text-sm font-medium text-neutral-700 transition
+                             hover:bg-neutral-100 focus-visible:outline-2
+                             focus-visible:outline-offset-2 focus-visible:outline-sky-500
+                             dark:border-neutral-800 dark:text-neutral-300 dark:hover:bg-neutral-800"
+                >
+                  <Icon className="size-3.5 shrink-0" />
+                  {link.label}
+                </a>
+              </li>
+            )
+          })}
+        </ul>
       )}
     </article>
   )

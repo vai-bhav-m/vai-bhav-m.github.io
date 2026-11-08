@@ -5,9 +5,10 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "tsc --noEmit && vite build",
+    "build": "tsc --noEmit && node scripts/check-content.mjs && vite build",
     "preview": "vite preview",
-    "check": "tsc --noEmit",
+    "check": "tsc --noEmit && node scripts/check-content.mjs",
+    "check:content": "node scripts/check-content.mjs",
     "build:index": "python ml/build_index.py",
     "build:og": "python ml/build_og_image.py",
     "build:assets": "npm run build:index && npm run build:og"
