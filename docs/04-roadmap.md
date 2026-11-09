@@ -29,6 +29,19 @@ at a time.
   itself while `resume:` is commented out in `about.md`.
 - **Phase 3 leftovers:** typography/design pass, and the accessibility items listed at
   the end of [03-features-and-ui.md](03-features-and-ui.md).
+- **Open points from the Nov 2026 site review** (third-person read as a hiring manager):
+  - **Project order tells the wrong story.** NAFNet (image deblurring) is the first card,
+    while the intro pitches perception and autonomy; the hopper / UR5 work should lead.
+    `featured: true` is parsed in `content.ts` but nothing uses it.
+  - **Little evidence beyond text.** Only 2 of 9 projects have links (hopper report,
+    mosquito slides); none link code or a video. A short clip of the hopper or the UR5e
+    arm would do more than any sentence.
+  - **Odd project count.** 7 visible cards leave one alone on the last row of the 2-col
+    grid; showing 6 or 8 squares it off.
+  - **Role labels.** ABB starts before the MS ends and Scout overlaps it; if any role was
+    part-time, a co-op or an internship (MathWorks, May to Aug), label it as such.
+  - **Illustrations** live on the `feat/visuals` branch (1 drawing so far, one project
+    per row). Not merged; merge `main` into it periodically to keep it current.
 - **Not built, and deliberately so:** service worker / offline support, per-project
   routes, analytics, any backend.
 

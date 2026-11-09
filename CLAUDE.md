@@ -132,6 +132,8 @@ Actions log is a worse place to read the same error.
 ## Known incomplete
 
 - No design pass: everything is functional Tailwind defaults.
+- Open points from the site review (project order, links/video, role labels, visuals
+  branch): see [`docs/04-roadmap.md`](docs/04-roadmap.md#what-is-actually-left).
 
 Deliberately not built: service worker / offline, per-project routes, analytics, any
 backend. See [`docs/01-decisions.md`](docs/01-decisions.md).
